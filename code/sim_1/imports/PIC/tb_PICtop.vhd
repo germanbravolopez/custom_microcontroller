@@ -3,6 +3,7 @@ USE IEEE.std_logic_1164.all;
 USE IEEE.numeric_std.all;
 
 USE work.PIC_pkg.all;
+use work.RS232_test.all;
 
 entity tb_PICtop is
 end tb_PICtop;
@@ -12,7 +13,7 @@ architecture TestBench of tb_PICtop is
   component PICtop
     port (
       Reset    : in  std_logic;
-      Clk      : in  std_logic;
+      Clk100MHZ      : in  std_logic;
       RS232_RX : in  std_logic;
       RS232_TX : out std_logic;
       switches : out std_logic_vector(7 downto 0);
@@ -37,7 +38,7 @@ begin  -- TestBench
   UUT: PICtop
     port map (
         Reset    => Reset,
-        Clk      => Clk,
+        Clk100MHZ=> Clk,
         RS232_RX => RS232_RX,
         RS232_TX => RS232_TX,
         switches => switches,

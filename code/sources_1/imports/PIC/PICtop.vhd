@@ -101,9 +101,9 @@ architecture behavior of PICtop is
     Port ( 
       Reset     : in STD_LOGIC;
       Clk       : in STD_LOGIC;
-      Alu_op    : in STD_LOGIC_VECTOR (5 downto 0);
+      Command_alu    : in alu_op;
       Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
-      Index_Reg : out STD_LOGIC;
+      Index_Reg : out STD_LOGIC_VECTOR (7 downto 0);
       FlagZ     : out STD_LOGIC;
       FlagC     : out STD_LOGIC;
       FlagN     : out STD_LOGIC;
@@ -139,8 +139,8 @@ architecture behavior of PICtop is
       DMA_ACK   : out STD_LOGIC;
       SEND_comm : out STD_LOGIC;
       DMA_READY : in STD_LOGIC;
-      ALU_op    : out STD_LOGIC_VECTOR (5 downto 0);
-      Index_Reg : in STD_LOGIC;
+      ALU_op    : out alu_op;
+      Index_Reg : in STD_LOGIC_VECTOR (7 downto 0);
       FlagZ     : in STD_LOGIC;
       FlagC     : in STD_LOGIC;
       FlagN     : in STD_LOGIC;
@@ -183,8 +183,8 @@ architecture behavior of PICtop is
   signal Temp_L    : std_logic_vector(6 downto 0);
   
   -- ALU
-  signal Alu_op    : std_logic_vector(5 downto 0);
-  signal Index_Reg : std_logic;
+  signal Alu_op    : alu_op;
+  signal Index_Reg : std_logic_vector (7 downto 0);
   signal FlagZ     : std_logic;
   signal FlagC     : std_logic;
   signal FlagN     : std_logic;
@@ -258,7 +258,7 @@ sinit <= not reset;
     port map (
       Reset     => Reset,
       Clk       => Clk,
-      Alu_op    => Alu_op,
+      Command_alu    => Alu_op,
       Databus   => Databus,
       Index_Reg => Index_Reg,
       FlagZ     => FlagZ,
