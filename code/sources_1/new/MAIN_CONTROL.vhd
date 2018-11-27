@@ -63,7 +63,7 @@ architecture Behavioral of MAIN_CONTROL is
     
 begin
 
-Next_process: process (currentstate) 
+Next_process: process (clk,currentstate) 
     begin
         case CurrentState is
             when Idle =>
@@ -214,6 +214,8 @@ Outputs: process (Clk)
                 DMA_ACK <= '0';
                 Send_Comm <= '0';
                 ALU_OP <= nop;
+                
+                flag_salto <= '0'; -- We need to reset it, we previously reseted it just in case there was a jumping instruction, what if there isn't.
                 
             when execute1 =>
                 Databus <= (others => 'Z');

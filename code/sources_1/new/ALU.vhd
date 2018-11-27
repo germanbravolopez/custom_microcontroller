@@ -64,6 +64,7 @@ begin
         case (Command_alu) is
             when nop =>      
                 null;
+                FlagZ <= '0'; --If not it was not resetting.
             when op_lda =>   
                 A <= unsigned(Databus);
             when op_ldb =>   
