@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_PICtop_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="pic_pkg" />
+            <top_module name="rs232_test" />
+            <top_module name="tb_PICtop" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="512000000001fs"></ZoomEndTime>
+      <Cursor1Time time="72450000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="130"></NameColumnWidth>
+      <ValueColumnWidth column_width="58"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="21" />
+   <wvobject fp_name="/tb_PICtop/Reset" type="logic">
+      <obj_property name="ElementShortName">Reset</obj_property>
+      <obj_property name="ObjectShortName">Reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/Clk" type="logic">
+      <obj_property name="ElementShortName">Clk</obj_property>
+      <obj_property name="ObjectShortName">Clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/RS232_RX" type="logic">
+      <obj_property name="ElementShortName">RS232_RX</obj_property>
+      <obj_property name="ObjectShortName">RS232_RX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/RS232_TX" type="logic">
+      <obj_property name="ElementShortName">RS232_TX</obj_property>
+      <obj_property name="ObjectShortName">RS232_TX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/switches" type="array">
+      <obj_property name="ElementShortName">switches[7:0]</obj_property>
+      <obj_property name="ObjectShortName">switches[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/Temp" type="array">
+      <obj_property name="ElementShortName">Temp[7:0]</obj_property>
+      <obj_property name="ObjectShortName">Temp[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/Disp" type="array">
+      <obj_property name="ElementShortName">Disp[1:0]</obj_property>
+      <obj_property name="ObjectShortName">Disp[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/Databus" type="array">
+      <obj_property name="ElementShortName">Databus[7:0]</obj_property>
+      <obj_property name="ObjectShortName">Databus[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/RAM_Addr" type="array">
+      <obj_property name="ElementShortName">RAM_Addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">RAM_Addr[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/RAM_OE" type="logic">
+      <obj_property name="ElementShortName">RAM_OE</obj_property>
+      <obj_property name="ObjectShortName">RAM_OE</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/RAM_Write" type="logic">
+      <obj_property name="ElementShortName">RAM_Write</obj_property>
+      <obj_property name="ObjectShortName">RAM_Write</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/CurrentState" type="other">
+      <obj_property name="ElementShortName">CurrentState</obj_property>
+      <obj_property name="ObjectShortName">CurrentState</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/NextState" type="other">
+      <obj_property name="ElementShortName">NextState</obj_property>
+      <obj_property name="ObjectShortName">NextState</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/ROM_Data" type="array">
+      <obj_property name="ElementShortName">ROM_Data[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ROM_Data[11:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/ROM_Addr" type="array">
+      <obj_property name="ElementShortName">ROM_Addr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ROM_Addr[11:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/Cuenta_Instruccion" type="array">
+      <obj_property name="ElementShortName">Cuenta_Instruccion[11:0]</obj_property>
+      <obj_property name="ObjectShortName">Cuenta_Instruccion[11:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/type_instruccion" type="array">
+      <obj_property name="ElementShortName">type_instruccion[1:0]</obj_property>
+      <obj_property name="ObjectShortName">type_instruccion[1:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/instruccion" type="array">
+      <obj_property name="ElementShortName">instruccion[5:0]</obj_property>
+      <obj_property name="ObjectShortName">instruccion[5:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/registro_segunda" type="array">
+      <obj_property name="ElementShortName">registro_segunda[11:0]</obj_property>
+      <obj_property name="ObjectShortName">registro_segunda[11:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/flag_mov_registros" type="logic">
+      <obj_property name="ElementShortName">flag_mov_registros</obj_property>
+      <obj_property name="ObjectShortName">flag_mov_registros</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/flag_salto" type="logic">
+      <obj_property name="ElementShortName">flag_salto</obj_property>
+      <obj_property name="ObjectShortName">flag_salto</obj_property>
+   </wvobject>
+</wave_config>

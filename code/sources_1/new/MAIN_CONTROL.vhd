@@ -54,16 +54,16 @@ architecture Behavioral of MAIN_CONTROL is
         DecisionSalto, Execute3, LecturaSegundaPalabra, EscribirEnRam, Execute4, Stall);
     
     signal CurrentState, NextState       : State;
-    signal type_instruccion              : std_logic_vector (1 downto 0);
-    signal flag_mov_registros            : std_logic;
-    signal flag_salto                    : std_logic;
+    signal type_instruccion              : std_logic_vector (1 downto 0) := "00";
+    signal flag_mov_registros            : std_logic := '0';
+    signal flag_salto                    : std_logic := '0';
     signal Cuenta_Instruccion            : unsigned(11 downto 0);
-    signal instruccion                   : std_logic_vector(5 downto 0);
-    signal registro_segunda              : std_logic_vector(11 downto 0);
+    signal instruccion                   : std_logic_vector(5 downto 0) := "000000";
+    signal registro_segunda              : std_logic_vector(11 downto 0) := (others => '0');
     
 begin
 
-Next_process: process (clk,currentstate) 
+Next_process: process (clk, currentstate) 
     begin
         case CurrentState is
             when Idle =>
@@ -151,7 +151,7 @@ Outputs: process (Clk)
                 registro_segunda <= (others => '0');
                 
                 Databus <= (others => 'Z');
-                --Rom_Addr <= 
+                Rom_Addr <= (others => 'Z'); 
                 Ram_Addr <= (others => 'Z');
                 Ram_Write <= 'Z';
                 Ram_OE <= 'Z';
