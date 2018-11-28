@@ -61,6 +61,8 @@ architecture Behavioral of MAIN_CONTROL is
     signal instruccion                   : std_logic_vector(5 downto 0) := "000000";
     signal registro_segunda              : std_logic_vector(11 downto 0) := (others => '0');
     
+    
+    signal EsperaStall                   : unsigned(2 downto 0);
 begin
 
 Next_process: process (clk, currentstate) 
@@ -125,8 +127,10 @@ Next_process: process (clk, currentstate)
             
             when Execute4 =>
                 NextState <= Stall;
+                --EsperaStall <= "000";
             when Stall =>
-                if (DMA_Ready = '1') then
+                
+                if (DMA_Ready = '1' and EsperaStall = "111") then
                     NextState <= Idle;
                 else
                     NextState <= Stall;
@@ -279,6 +283,8 @@ Outputs: process (Clk)
                 ALU_OP <= nop;
                             
             when DecisionSalto =>
+                            Databus <= (others => 'Z');
+
                 if (instruccion = JMP_UNCOND) then
                     flag_salto <= '1';
                 else
@@ -289,6 +295,8 @@ Outputs: process (Clk)
                     end if;
                 end if;
             when Execute3 =>
+                            Databus <= (others => 'Z');
+
                 if(flag_mov_registros = '1') then
                     case instruccion(2 downto 0) is
                         when DST_A => 
@@ -323,6 +331,8 @@ Outputs: process (Clk)
                                         alu_op <= nop;
                                 end case;
                             when SRC_MEM =>
+                                            Databus <= (others => 'Z');
+
                                 ram_addr <= rom_data(7 downto 0);
                                 ram_oe <= '0';
                                 case instruccion(2 downto 0) is
@@ -338,6 +348,8 @@ Outputs: process (Clk)
                                         alu_op <= nop;
                                 end case;
                             when SRC_INDXD_MEM =>
+                                            Databus <= (others => 'Z');
+
                                 ram_addr <= std_logic_vector(unsigned(rom_data(7 downto 0)) + unsigned(index_reg(7 downto 0)));
                                 ram_oe <= '0';
                                 case instruccion(2 downto 0) is
@@ -353,17 +365,31 @@ Outputs: process (Clk)
                                         alu_op <= nop;
                                 end case;
                             when others =>
+                                            Databus <= (others => 'Z');
+
                                 Ram_Addr <= (others => 'Z');
                                 Ram_OE <= 'Z';
                                 alu_op <= nop;
                         end case;
                     when '1' =>
+                                                    Ram_OE <= 'Z';
+
+                                    Databus <= (others => 'Z');
+
                         alu_op <= op_oeacc;
                     when others =>
+                                                    Ram_OE <= 'Z';
+
+                                    Databus <= (others => 'Z');
+
                         alu_op <= nop;
                 end case;
                 
             when EscribirEnRam =>
+                                            Ram_OE <= 'Z';
+
+                            Databus <= (others => 'Z');
+
                 case instruccion(2 downto 0) is
                     when DST_MEM =>
                         ram_addr <= rom_data(7 downto 0);
@@ -386,6 +412,8 @@ Outputs: process (Clk)
                 Send_Comm <= '1';
                 ALU_OP <= nop;
                 
+                EsperaStall<="000";
+                
             when Stall =>
                 Databus <= (others => 'Z');
                 --Rom_Addr <= 
@@ -395,6 +423,9 @@ Outputs: process (Clk)
                 DMA_ACK <= '0';
                 Send_Comm <= '0';
                 ALU_OP <= nop;
+                if(Clk'event and Clk = '1' and (EsperaStall /= "111")) then
+                    EsperaStall <= EsperaStall + to_unsigned(1,3);
+                end if;
                             
         end case;
     end process;
