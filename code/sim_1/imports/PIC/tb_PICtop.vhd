@@ -26,7 +26,7 @@ architecture TestBench of tb_PICtop is
 -----------------------------------------------------------------------------
 
   signal Reset    : std_logic;
-  signal Clk      : std_logic;
+  signal Clk100MHZ      : std_logic;
   signal RS232_RX : std_logic;
   signal RS232_TX : std_logic;
   signal switches : std_logic_vector(7 downto 0);
@@ -38,7 +38,7 @@ begin  -- TestBench
   UUT: PICtop
     port map (
         Reset    => Reset,
-        Clk100MHZ=> Clk,
+        Clk100MHZ=> Clk100MHZ,
         RS232_RX => RS232_RX,
         RS232_TX => RS232_TX,
         switches => switches,
@@ -53,8 +53,8 @@ begin  -- TestBench
 
   p_clk : PROCESS
   BEGIN
-     clk <= '1', '0' after 25 ns;
-     wait for 50 ns;
+     Clk100MHZ <= '1', '0' after 5 ns;
+     wait for 10 ns;
   END PROCESS;
 
 -------------------------------------------------------------------------------

@@ -61,7 +61,7 @@ architecture Behavioral of MAIN_CONTROL is
     signal instruccion                   : std_logic_vector(5 downto 0) := "000000";
     signal registro_segunda              : std_logic_vector(11 downto 0) := (others => '0');
     
-    
+    signal flagZretenido                 : std_logic := '0';
     signal EsperaStall                   : unsigned(2 downto 0);
 begin
 
@@ -150,6 +150,7 @@ FFs: process (Reset, Clk, NextState, CurrentState)
 
 Outputs: process (Clk) 
     begin
+    if (clk'event and clk = '1') then 
         case CurrentState is
             when Idle =>
                 registro_segunda <= (others => '0');
@@ -182,7 +183,8 @@ Outputs: process (Clk)
                 DMA_ACK <= '0';
                 Send_Comm <= '0';
                 ALU_OP <= nop;
-                
+                                flagZretenido <= flagZ;
+
             when fetch2 =>
                 Databus <= (others => 'Z');
                 --Rom_Addr ;
@@ -258,7 +260,6 @@ Outputs: process (Clk)
                     when others =>
                         alu_op <= nop;
                 end case;
-                
             when execute2 =>
                 Rom_Addr <= std_logic_vector(Cuenta_Instruccion);
                 
@@ -288,12 +289,13 @@ Outputs: process (Clk)
                 if (instruccion = JMP_UNCOND) then
                     flag_salto <= '1';
                 else
-                    if (flagZ = '1') then
+                    if (flagZretenido = '1') then
                         flag_Salto <= '1';
                     else
                         flag_salto <= '0';
                     end if;
                 end if;
+                flagZretenido <= '0';
             when Execute3 =>
                             Databus <= (others => 'Z');
 
@@ -428,6 +430,7 @@ Outputs: process (Clk)
                 end if;
                             
         end case;
+    end if;
     end process;
     
 CounterInstrucciones : process(Reset, CurrentState) 

@@ -65,6 +65,7 @@ begin
             when nop =>      
                 null;
                 FlagZ <= '0'; --If not it was not resetting.
+                Databus <= (others => 'Z');
             when op_lda =>   
                 A <= unsigned(Databus);
             when op_ldb =>   
@@ -75,10 +76,13 @@ begin
                 Index <= unsigned(Databus);
             when op_mvacc2id =>
                 Index <= ACC;
+                Databus <= (others => 'Z');
             when op_mvacc2a =>
                 A <= ACC;
+                Databus <= (others => 'Z');
             when op_mvacc2b =>
                 B <= ACC;
+                Databus <= (others => 'Z');
             when op_add =>
                 ACC_internal := ('0' & A) + ('0' & B);
                 ACC <= ACC_internal(7 downto 0);
@@ -88,12 +92,14 @@ begin
                 else
                     FlagZ <= '0';
                 end if;
-                FlagC <= ACC_internal(8); 
+                FlagC <= ACC_internal(8);
                 if (ACC_internal > "000001111") then -- acc >= 16 : acarreo entre nibbles
                     FlagN <= '1';
                 else 
                     FlagN <= '0';
                 end if;
+                
+                Databus <= (others => 'Z');
             when op_sub =>
                 ACC_internal := ('0' & A) - ('0' & B);
                 ACC <= ACC_internal(7 downto 0);
@@ -103,16 +109,20 @@ begin
                 else
                     FlagZ <= '0';
                 end if;
-                FlagC <= ACC_internal(8); 
+                FlagC <= ACC_internal(8);
                 if (ACC_internal > "000001111") then   
                     FlagN <= '1';                      
                 else                                   
                     FlagN <= '0';                      
-                end if;    
+                end if;   
+                
+                Databus <= (others => 'Z'); 
             when op_shiftl =>
                 ACC <= ACC(6 downto 0) & '0';
+                Databus <= (others => 'Z');
             when op_shiftr =>
                 ACC <= '0' & ACC(7 downto 1);
+                Databus <= (others => 'Z');
             when op_and =>
                 ACC_internal := ('0' & A) and ('0' & B);
                 ACC <= ACC_internal(7 downto 0);
@@ -121,6 +131,7 @@ begin
                 else
                     FlagZ <= '0';
                 end if;
+                Databus <= (others => 'Z');
             when op_or =>
                 ACC_internal := ('0' & A) or ('0' & B);
                 ACC <= ACC_internal(7 downto 0);
@@ -129,6 +140,7 @@ begin
                 else
                     FlagZ <= '0';
                 end if;
+                Databus <= (others => 'Z');
             when op_xor =>
                 ACC_internal := ('0' & A) xor ('0' & B);
                 ACC <= ACC_internal(7 downto 0);
@@ -137,38 +149,44 @@ begin
                 else
                     FlagZ <= '0';
                 end if;
+                Databus <= (others => 'Z');
             when op_cmpe =>            
                 if (A = B) then
                     FlagZ <= '1';
                 else       
                     FlagZ <= '0';
                 end if;
+                Databus <= (others => 'Z');
             when op_cmpg =>                  
                 if (A > B) then  
                     FlagZ <= '1';
                 else             
                     FlagZ <= '0';
-                end if;          
+                end if;  
+                Databus <= (others => 'Z');        
             when op_cmpl =>                  
                 if (A < B) then  
                     FlagZ <= '1';
                 else             
                     FlagZ <= '0';
                 end if;  
+                Databus <= (others => 'Z');
             when op_ascii2bin =>
-                if (to_unsigned(30, 8) < A) and (A < to_unsigned(39, 8)) then
-                    A <= A - to_unsigned(30, 8);
+                if (to_unsigned(48, 8) < A) and (A < to_unsigned(57, 8)) then
+                    A <= A - to_unsigned(48, 8);
                     FlagE <= '0';
                 else
                     FlagE <= '1';
                 end if;
+                Databus <= (others => 'Z');
             when op_bin2ascii =>
                 if (to_unsigned(0, 8) < A) and (A < to_unsigned(9, 8)) then
-                    A <= A + to_unsigned(30, 8);                             
+                    A <= A + to_unsigned(48, 8);                             
                     FlagE <= '0';                                            
                 else                                                         
                     FlagE <= '1';                                            
-                end if;                                                      
+                end if;  
+                Databus <= (others => 'Z');                                                    
             when op_oeacc =>
                 Databus <= std_logic_vector(ACC);
         end case;

@@ -277,7 +277,7 @@ Outputs: process (Clk)
                 Address <= (others => 'Z'); 
                 Databus <= (others => 'Z'); 
                                             
-                DMA_RQ <= '1';              
+                DMA_RQ <= '0';              
                 READY  <= '1';              
                                             
                 Data_Read <= '0';           
