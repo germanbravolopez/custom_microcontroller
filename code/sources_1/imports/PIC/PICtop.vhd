@@ -197,16 +197,16 @@ architecture behavior of PICtop is
 
 begin  -- RTL
 
-temp_display: process (clk)
-    begin
-    if(clk'event and clk = '0') then
-        temp <= temp_h & '0';
-        disp <= "00";
-    elsif (clk'event and clk = '1') then
-        temp <= temp_l & '0';
-        disp <= "01";
-    end if;
-end process;
+--temp_display: process (clk)
+--    begin
+--    if(reset = '0') then
+--        counter_disp <= (others => '0');
+--        disp <= "00";
+--    elsif
+--        temp <= '0' & temp_l;
+--        disp <= "01";
+--    end if;
+--end process;
 
   RS232_PHY: RS232top
     port map (

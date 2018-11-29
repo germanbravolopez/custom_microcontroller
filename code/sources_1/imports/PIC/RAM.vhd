@@ -128,14 +128,14 @@ with ram_specific(31)(3 downto 0) select
 -------------------------------------------------------------------------
 -- Seleccionamos el LSB de cada byte de la direccion correspondiente a los switches.
 
-Switches <= ram_specific(17)(0 downto 0) &
-            ram_specific(16)(0 downto 0) &
-            ram_specific(15)(0 downto 0) &
-            ram_specific(14)(0 downto 0) &
-            ram_specific(13)(0 downto 0) &
-            ram_specific(12)(0 downto 0) &
-            ram_specific(11)(0 downto 0) &
-            ram_specific(10)(0 downto 0);
+Switches <= ram_specific(23)(0 downto 0) &
+            ram_specific(22)(0 downto 0) &
+            ram_specific(21)(0 downto 0) &
+            ram_specific(20)(0 downto 0) &
+            ram_specific(19)(0 downto 0) &
+            ram_specific(18)(0 downto 0) &
+            ram_specific(17)(0 downto 0) &
+            ram_specific(16)(0 downto 0);
 
 END behavior;
 

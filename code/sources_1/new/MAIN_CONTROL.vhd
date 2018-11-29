@@ -425,7 +425,7 @@ Outputs: process (Clk)
                 DMA_ACK <= '0';
                 Send_Comm <= '0';
                 ALU_OP <= nop;
-                if(Clk'event and Clk = '1' and (EsperaStall /= "111")) then
+                if((EsperaStall /= "111")) then--Clk'event and Clk = '1' and 
                     EsperaStall <= EsperaStall + to_unsigned(1,3);
                 end if;
                             

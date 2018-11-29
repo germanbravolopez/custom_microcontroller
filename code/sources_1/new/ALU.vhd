@@ -173,7 +173,7 @@ begin
                 Databus <= (others => 'Z');
             when op_ascii2bin =>
                 if (to_unsigned(48, 8) < A) and (A < to_unsigned(57, 8)) then
-                    A <= A - to_unsigned(48, 8);
+                    ACC <= A - to_unsigned(48, 8);
                     FlagE <= '0';
                 else
                     FlagE <= '1';
@@ -181,7 +181,7 @@ begin
                 Databus <= (others => 'Z');
             when op_bin2ascii =>
                 if (to_unsigned(0, 8) < A) and (A < to_unsigned(9, 8)) then
-                    A <= A + to_unsigned(48, 8);                             
+                    ACC <= A + to_unsigned(48, 8);                             
                     FlagE <= '0';                                            
                 else                                                         
                     FlagE <= '1';                                            
