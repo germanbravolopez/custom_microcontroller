@@ -104,7 +104,7 @@ Outputs: process (CurrentState, DataCount, Data, FlagDataCount)
         end case;
     end process;
 
-BitWidther: process (Clk, Reset, CurrentState) 
+BitWidth_counter: process (Clk, Reset, CurrentState) 
     begin
         if (Reset = '0' or CurrentState = Idle) then
             BitWidth <= (others => '0');

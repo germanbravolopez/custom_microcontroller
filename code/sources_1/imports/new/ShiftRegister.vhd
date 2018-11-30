@@ -37,6 +37,7 @@ begin
 
 reg_proc: process (Reset, Clk)
     variable q_int  : unsigned(7 downto 0); -- Las variables se actualizan inmediatamente
+    
     begin
         if (Reset = '0') then
             q_int := (others => '0');

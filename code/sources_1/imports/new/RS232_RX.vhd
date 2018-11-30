@@ -110,7 +110,7 @@ Outputs: process (CurrentState, DataCount, FlagHalfBit, LineRD_in)
          end case;
     end process;
 
-BitWidther_HalfWidther: process (Clk, Reset, CurrentState, LineRD_in)
+BitWidth_HalfWidth_counter: process (Clk, Reset, CurrentState, LineRD_in)
     begin
         if (Reset = '0' or CurrentState = Idle) then
             BitWidth <= (others => '0');
