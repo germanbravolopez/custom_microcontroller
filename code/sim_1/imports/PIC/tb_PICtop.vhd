@@ -12,38 +12,38 @@ architecture TestBench of tb_PICtop is
 
   component PICtop
     port (
-      Reset    : in  std_logic;
-      Clk100MHZ      : in  std_logic;
-      RS232_RX : in  std_logic;
-      RS232_TX : out std_logic;
-      switches : out std_logic_vector(7 downto 0);
-      Temp     : out std_logic_vector(7 downto 0);
-      Disp     : out std_logic_vector(1 downto 0));
+      Reset     : in  std_logic;
+      Clk100MHZ : in  std_logic;
+      RS232_RX  : in  std_logic;
+      RS232_TX  : out std_logic;
+      switches  : out std_logic_vector(7 downto 0);
+      Temp      : out std_logic_vector(7 downto 0);
+      Disp      : out std_logic_vector(1 downto 0));
   end component;
 
 -----------------------------------------------------------------------------
 -- Internal signals
 -----------------------------------------------------------------------------
 
-  signal Reset    : std_logic;
-  signal Clk100MHZ      : std_logic;
-  signal RS232_RX : std_logic;
-  signal RS232_TX : std_logic;
-  signal switches : std_logic_vector(7 downto 0);
-  signal Temp     : std_logic_vector(7 downto 0);
-  signal Disp     : std_logic_vector(1 downto 0);
+  signal Reset     : std_logic;
+  signal Clk100MHZ : std_logic;
+  signal RS232_RX  : std_logic;
+  signal RS232_TX  : std_logic;
+  signal switches  : std_logic_vector(7 downto 0);
+  signal Temp      : std_logic_vector(7 downto 0);
+  signal Disp      : std_logic_vector(1 downto 0);
 
 begin  -- TestBench
 
   UUT: PICtop
     port map (
-        Reset    => Reset,
-        Clk100MHZ=> Clk100MHZ,
-        RS232_RX => RS232_RX,
-        RS232_TX => RS232_TX,
-        switches => switches,
-        Temp     => Temp,
-        Disp     => Disp);
+        Reset     => Reset,
+        Clk100MHZ => Clk100MHZ,
+        RS232_RX  => RS232_RX,
+        RS232_TX  => RS232_TX,
+        switches  => switches,
+        Temp      => Temp,
+        Disp      => Disp);
 
 -----------------------------------------------------------------------------
 -- Reset & clock generator
@@ -74,4 +74,3 @@ begin  -- TestBench
   end process SEND_STUFF;
    
 end TestBench;
-

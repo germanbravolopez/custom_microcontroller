@@ -171,4 +171,3 @@ begin  -- RTL
   TX_RDY <= TX_RDY_i;
 
 end RTL;
-

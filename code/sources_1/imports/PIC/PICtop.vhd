@@ -6,14 +6,14 @@ USE IEEE.numeric_std.all;
 USE work.PIC_pkg.all;
 
 entity PICtop is
-  port (
-    Reset     : in  std_logic;           -- Asynchronous, active low
-    CLK100MHZ : in  std_logic;           -- System clock, 20 MHz, rising_edge
-    RS232_RX  : in  std_logic;           -- RS232 RX line
-    RS232_TX  : out std_logic;           -- RS232 TX line
-    Switches  : out std_logic_vector(7 downto 0);   -- Switch status bargraph
-    Temp      : out std_logic_vector(7 downto 0);   -- Display value for T_STAT
-    Disp      : out std_logic_vector(1 downto 0));  -- Display activation for T_STAT
+    port (
+        Reset     : in  std_logic;           -- Asynchronous, active low
+        CLK100MHZ : in  std_logic;           -- System clock, 20 MHz, rising_edge
+        RS232_RX  : in  std_logic;           -- RS232 RX line
+        RS232_TX  : out std_logic;           -- RS232 TX line
+        Switches  : out std_logic_vector(7 downto 0);   -- Switch status bargraph
+        Temp      : out std_logic_vector(7 downto 0);   -- Display value for T_STAT
+        Disp      : out std_logic_vector(1 downto 0));  -- Display activation for T_STAT
 end PICtop;
 
 architecture behavior of PICtop is
@@ -99,15 +99,15 @@ architecture behavior of PICtop is
   
   component ALU
     Port ( 
-      Reset     : in STD_LOGIC;
-      Clk       : in STD_LOGIC;
-      Command_alu    : in alu_op;
-      Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
-      Index_Reg : out STD_LOGIC_VECTOR (7 downto 0);
-      FlagZ     : out STD_LOGIC;
-      FlagC     : out STD_LOGIC;
-      FlagN     : out STD_LOGIC;
-      FlagE     : out STD_LOGIC);
+      Reset       : in STD_LOGIC;
+      Clk         : in STD_LOGIC;
+      Command_alu : in alu_op;
+      Databus     : inout STD_LOGIC_VECTOR (7 downto 0);
+      Index_Reg   : out STD_LOGIC_VECTOR (7 downto 0);
+      FlagZ       : out STD_LOGIC;
+      FlagC       : out STD_LOGIC;
+      FlagN       : out STD_LOGIC;
+      FlagE       : out STD_LOGIC);
   end component;
   
   ------------------------------------------------------------------------
@@ -194,19 +194,29 @@ architecture behavior of PICtop is
   signal INS_addr : std_logic_vector(11 downto 0);
   signal INS_bus  : std_logic_vector(11 downto 0);
   ------------------------------------------------------------------------
+  signal counter_disp : integer range 0 to 20000 := 0;
 
 begin  -- RTL
 
---temp_display: process (clk)
---    begin
---    if(reset = '0') then
---        counter_disp <= (others => '0');
---        disp <= "00";
---    elsif
---        temp <= '0' & temp_l;
---        disp <= "01";
---    end if;
---end process;
+temp_display: process (reset, clk) -- cada 1 ms se muestra por cada display el valor de su temperatura
+    begin
+        if (reset = '0') then
+            counter_disp <= 0;
+        elsif (clk'event and clk = '1') then
+            if (counter_disp = 10000) then
+                temp <= '0' & temp_h;
+                disp <= "01";
+                counter_disp <= counter_disp + 1;
+            elsif (counter_disp = 20000) then
+                temp <= '0' & temp_l;
+                disp <= "00";
+                counter_disp <= 0;
+            else
+                counter_disp <= counter_disp + 1;
+            end if;
+        end if;
+    end process;
+
 
   RS232_PHY: RS232top
     port map (
@@ -228,9 +238,9 @@ sinit <= not reset;
   Clk_convert : clk_converter
     port map ( 
       clk_out1 => Clk,
-      reset => sinit, --tiene reset activo en alto
-      locked => OPEN,
-      clk_in1 => CLK100MHZ);
+      reset    => sinit, --tiene reset activo en alto
+      locked   => OPEN,
+      clk_in1  => CLK100MHZ);
       
   RAM_inst : RAM
     port map (
@@ -267,15 +277,15 @@ sinit <= not reset;
       
   ALU_inst : ALU
     port map (
-      Reset     => Reset,
-      Clk       => Clk,
-      Command_alu    => Alu_op,
-      Databus   => Databus,
-      Index_Reg => Index_Reg,
-      FlagZ     => FlagZ,
-      FlagC     => FlagC,
-      FlagN     => FlagN,
-      FlagE     => FlagE);
+      Reset       => Reset,
+      Clk         => Clk,
+      Command_alu => Alu_op,
+      Databus     => Databus,
+      Index_Reg   => Index_Reg,
+      FlagZ       => FlagZ,
+      FlagC       => FlagC,
+      FlagN       => FlagN,
+      FlagE       => FlagE);
       
   ROM_inst : ROM
     port map (
@@ -289,7 +299,7 @@ sinit <= not reset;
       ROM_Data  => INS_bus,  
       ROM_Addr  => INS_addr,
       RAM_Addr  => Address,  
-      RAM_CS    => OPEN,      -- Con esto hay que hacer algo no??
+      RAM_CS    => OPEN, 
       RAM_Write => Write_en, 
       RAM_OE    => OE,    
       Databus   => Databus,   
@@ -302,9 +312,6 @@ sinit <= not reset;
       FlagZ     => FlagZ,     
       FlagC     => FlagC,     
       FlagN     => FlagN,     
-      FlagE     => FlagE);     
-  ------------------------------------------------------------------------
-  
+      FlagE     => FlagE);       
   
 end behavior;
-

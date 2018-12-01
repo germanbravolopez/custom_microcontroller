@@ -14,21 +14,25 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="512000000001fs"></ZoomEndTime>
-      <Cursor1Time time="72450000000fs"></Cursor1Time>
+      <ZoomEndTime time="1001000000001fs"></ZoomEndTime>
+      <Cursor1Time time="1001000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="130"></NameColumnWidth>
+      <NameColumnWidth column_width="114"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="21" />
+   <WVObjectSize size="41" />
+   <wvobject fp_name="/tb_PICtop/Clk100MHZ" type="logic">
+      <obj_property name="ElementShortName">Clk100MHZ</obj_property>
+      <obj_property name="ObjectShortName">Clk100MHZ</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/Clk_convert/inst/clk_out1" type="logic">
+      <obj_property name="ElementShortName">clk_out1</obj_property>
+      <obj_property name="ObjectShortName">clk_out1</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb_PICtop/Reset" type="logic">
       <obj_property name="ElementShortName">Reset</obj_property>
       <obj_property name="ObjectShortName">Reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_PICtop/Clk" type="logic">
-      <obj_property name="ElementShortName">Clk</obj_property>
-      <obj_property name="ObjectShortName">Clk</obj_property>
    </wvobject>
    <wvobject fp_name="/tb_PICtop/RS232_RX" type="logic">
       <obj_property name="ElementShortName">RS232_RX</obj_property>
@@ -53,6 +57,11 @@
    <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/Databus" type="array">
       <obj_property name="ElementShortName">Databus[7:0]</obj_property>
       <obj_property name="ObjectShortName">Databus[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/ALU_op" type="other">
+      <obj_property name="ElementShortName">ALU_op</obj_property>
+      <obj_property name="ObjectShortName">ALU_op</obj_property>
    </wvobject>
    <wvobject fp_name="/tb_PICtop/UUT/MAIN/RAM_Addr" type="array">
       <obj_property name="ElementShortName">RAM_Addr[7:0]</obj_property>
@@ -66,13 +75,13 @@
       <obj_property name="ElementShortName">RAM_Write</obj_property>
       <obj_property name="ObjectShortName">RAM_Write</obj_property>
    </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/RAM_inst/chipset" type="logic">
+      <obj_property name="ElementShortName">chipset</obj_property>
+      <obj_property name="ObjectShortName">chipset</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb_PICtop/UUT/MAIN/CurrentState" type="other">
       <obj_property name="ElementShortName">CurrentState</obj_property>
       <obj_property name="ObjectShortName">CurrentState</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb_PICtop/UUT/MAIN/NextState" type="other">
-      <obj_property name="ElementShortName">NextState</obj_property>
-      <obj_property name="ObjectShortName">NextState</obj_property>
    </wvobject>
    <wvobject fp_name="/tb_PICtop/UUT/MAIN/ROM_Data" type="array">
       <obj_property name="ElementShortName">ROM_Data[11:0]</obj_property>
@@ -104,6 +113,26 @@
       <obj_property name="ObjectShortName">registro_segunda[11:0]</obj_property>
       <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/DMA_RQ" type="logic">
+      <obj_property name="ElementShortName">DMA_RQ</obj_property>
+      <obj_property name="ObjectShortName">DMA_RQ</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/DMA_ACK" type="logic">
+      <obj_property name="ElementShortName">DMA_ACK</obj_property>
+      <obj_property name="ObjectShortName">DMA_ACK</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/DMA_READY" type="logic">
+      <obj_property name="ElementShortName">DMA_READY</obj_property>
+      <obj_property name="ObjectShortName">DMA_READY</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/DMA_inst/TX_RDY" type="logic">
+      <obj_property name="ElementShortName">TX_RDY</obj_property>
+      <obj_property name="ObjectShortName">TX_RDY</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/SEND_comm" type="logic">
+      <obj_property name="ElementShortName">SEND_comm</obj_property>
+      <obj_property name="ObjectShortName">SEND_comm</obj_property>
+   </wvobject>
    <wvobject fp_name="/tb_PICtop/UUT/MAIN/flag_mov_registros" type="logic">
       <obj_property name="ElementShortName">flag_mov_registros</obj_property>
       <obj_property name="ObjectShortName">flag_mov_registros</obj_property>
@@ -111,5 +140,59 @@
    <wvobject fp_name="/tb_PICtop/UUT/MAIN/flag_salto" type="logic">
       <obj_property name="ElementShortName">flag_salto</obj_property>
       <obj_property name="ObjectShortName">flag_salto</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/FlagZ" type="logic">
+      <obj_property name="ElementShortName">FlagZ</obj_property>
+      <obj_property name="ObjectShortName">FlagZ</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/MAIN/flagZretenido" type="logic">
+      <obj_property name="ElementShortName">flagZretenido</obj_property>
+      <obj_property name="ObjectShortName">flagZretenido</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/FlagC" type="logic">
+      <obj_property name="ElementShortName">FlagC</obj_property>
+      <obj_property name="ObjectShortName">FlagC</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/FlagN" type="logic">
+      <obj_property name="ElementShortName">FlagN</obj_property>
+      <obj_property name="ObjectShortName">FlagN</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/FlagE" type="logic">
+      <obj_property name="ElementShortName">FlagE</obj_property>
+      <obj_property name="ObjectShortName">FlagE</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/DMA_inst/CurrentState" type="other">
+      <obj_property name="ElementShortName">CurrentState</obj_property>
+      <obj_property name="ObjectShortName">CurrentState</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/RAM_inst/ram_specific" type="array">
+      <obj_property name="ElementShortName">ram_specific[0:63][7:0]</obj_property>
+      <obj_property name="ObjectShortName">ram_specific[0:63][7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/RAM_inst/address" type="array">
+      <obj_property name="ElementShortName">address[7:0]</obj_property>
+      <obj_property name="ObjectShortName">address[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/RAM_inst/databus" type="array">
+      <obj_property name="ElementShortName">databus[7:0]</obj_property>
+      <obj_property name="ObjectShortName">databus[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/Index_Reg" type="array">
+      <obj_property name="ElementShortName">Index_Reg[7:0]</obj_property>
+      <obj_property name="ObjectShortName">Index_Reg[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/A" type="array">
+      <obj_property name="ElementShortName">A[7:0]</obj_property>
+      <obj_property name="ObjectShortName">A[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/B" type="array">
+      <obj_property name="ElementShortName">B[7:0]</obj_property>
+      <obj_property name="ObjectShortName">B[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_PICtop/UUT/ALU_inst/ACC" type="array">
+      <obj_property name="ElementShortName">ACC[7:0]</obj_property>
+      <obj_property name="ObjectShortName">ACC[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
 </wave_config>

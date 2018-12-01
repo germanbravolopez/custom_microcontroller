@@ -57,7 +57,7 @@ architecture Behavioral of DMA is
     
 begin
 
-Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count_rx) 
+Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count_rx, next_clk) 
     begin
         case CurrentState is
             when Idle =>
@@ -109,7 +109,7 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                     NextState <= Inicio_rx;
                 end if;
             when espabiladr =>
-                if Next_clk = "01" then
+                if (Next_clk = "01") then
                     NextState <= recibir;
                 else
                     NextState <= espabiladr;
@@ -146,7 +146,7 @@ FFs: process (Reset, Clk, NextState, CurrentState)
         end if;
     end process;
 
-Outputs: process (Clk) 
+Outputs: process (Clk, currentstate) 
     begin
         case CurrentState is
             when Idle =>
@@ -304,7 +304,7 @@ CounterRecibir : process(clk, Reset, CurrentState)
     begin
         if (Reset = '0') then
             Count_rx <= (others => '0');
-        elsif (clk'event and clk = '0') then
+        elsif (clk'event and clk = '0') then -- estaba en los pulsos de bajada
             if (Count_rx = "11") then
                 Count_rx <= (others => '0');
             elsif (CurrentState = recibir) then
@@ -312,6 +312,7 @@ CounterRecibir : process(clk, Reset, CurrentState)
             end if;
         end if;
     end process;
+    
 CounterNextClk : process(clk, Reset, CurrentState) 
         begin
             if (Reset = '0') then
@@ -326,4 +327,5 @@ CounterNextClk : process(clk, Reset, CurrentState)
                 end if;
             end if;
         end process;    
+
 end Behavioral;

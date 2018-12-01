@@ -60,9 +60,9 @@ p_escritura : process (clk, reset)
 
 p_lectura : process (clk, address, chipset, oe) -- la memoria tiene que ser síncrona 
     begin                                       -- para que Xilinx lo sintetice en los bloques reservados
---        if (reset = '0') then
---            databus <= (others => 'Z');
---        elsif (clk'event and clk = '1') then
+        if (reset = '0') then
+            databus <= (others => 'Z');
+        elsif (clk'event and clk = '1') then
             if (oe = '0') then
                 if (chipset = '0') then
                     databus <= ram_specific(to_integer(unsigned(address)));
@@ -72,7 +72,7 @@ p_lectura : process (clk, address, chipset, oe) -- la memoria tiene que ser sínc
             else
                 databus <= (others => 'Z');
             end if;
---        end if;
+        end if;
     end process;
 
 -------------------------------------------------------------------------

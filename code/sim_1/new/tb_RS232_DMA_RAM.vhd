@@ -83,7 +83,7 @@ test_rx : process
     begin
         RS232_RX <= '1';
         wait for 40 us;
-        Transmit(RS232_RX, X"49");
+        Transmit(RS232_RX, X"49"); 
         wait for 40 us;
         Transmit(RS232_RX, X"34");
         wait for 40 us;
