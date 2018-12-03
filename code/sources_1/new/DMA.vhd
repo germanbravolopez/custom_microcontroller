@@ -57,6 +57,16 @@ architecture Behavioral of DMA is
     
 begin
 
+FFs: process (Reset, Clk, NextState, CurrentState) 
+    begin
+        if Reset = '0' then
+            CurrentState <= Idle;
+        elsif Clk'event and Clk = '1' then
+            CurrentState <= NextState;
+        end if;
+    end process;
+    
+    
 Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count_rx, next_clk) 
     begin
         case CurrentState is
@@ -137,15 +147,6 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
         end case;
     end process;
 
-FFs: process (Reset, Clk, NextState, CurrentState) 
-    begin
-        if Reset = '0' then
-            CurrentState <= Idle;
-        elsif Clk'event and Clk = '1' then
-            CurrentState <= NextState;
-        end if;
-    end process;
-
 Outputs: process (Clk, currentstate) 
     begin
         case CurrentState is
@@ -179,7 +180,7 @@ Outputs: process (Clk, currentstate)
                 OE <= '0';
                 Write_en <= 'Z';
                 Address <= dma_tx_buffer_msb;
-                --Databus <= (others => 'Z');
+                Databus <= (others => 'Z');
                 
                 DMA_RQ <= '0';
                 READY  <= '0';
@@ -191,8 +192,8 @@ Outputs: process (Clk, currentstate)
             when envio1 =>
                 OE <= '0';
                 Write_en <= 'Z';
-                --Address <= (others => 'Z');
-                --Databus <= (others => 'Z');
+                Address <= dma_tx_buffer_msb;
+                Databus <= (others => 'Z');
                 
                 DMA_RQ <= '0';
                 READY  <= '0';
@@ -205,7 +206,7 @@ Outputs: process (Clk, currentstate)
                 OE <= '0';                  
                 Write_en <= 'Z';            
                 Address <= dma_tx_buffer_lsb;
-                --Databus <= (others => 'Z'); 
+                Databus <= (others => 'Z'); 
                                             
                 DMA_RQ <= '0';              
                 READY  <= '0';              
@@ -217,8 +218,8 @@ Outputs: process (Clk, currentstate)
             when envio2 =>
                 OE <= '0';
                 Write_en <= 'Z';
-                --Address <= (others => 'Z');
-                --Databus <= (others => 'Z');
+                Address <= dma_tx_buffer_lsb;
+                Databus <= (others => 'Z');
                 
                 DMA_RQ <= '0';
                 READY  <= '0';
@@ -234,7 +235,7 @@ Outputs: process (Clk, currentstate)
                 Databus <= (others => 'Z'); 
                                             
                 DMA_RQ <= '1';              
-                READY  <= '1';              
+                READY  <= '0';              
                                             
                 Data_Read <= '0';           
                                             
@@ -247,7 +248,7 @@ Outputs: process (Clk, currentstate)
                 Databus <= (others => 'Z'); 
                                             
                 DMA_RQ <= '1';              
-                READY  <= '1';              
+                READY  <= '0';              
                                             
                 Data_Read <= '1';           
                                             
@@ -265,7 +266,7 @@ Outputs: process (Clk, currentstate)
                 Databus <= rcvd_data; 
                                             
                 DMA_RQ <= '1';              
-                READY  <= '1';              
+                READY  <= '0';              
                                             
                 Data_Read <= '0';           
                                             
@@ -278,7 +279,7 @@ Outputs: process (Clk, currentstate)
                 Databus <= (others => 'Z'); 
                                             
                 DMA_RQ <= '0';              
-                READY  <= '1';              
+                READY  <= '0';              
                                             
                 Data_Read <= '0';           
                                             
@@ -291,7 +292,7 @@ Outputs: process (Clk, currentstate)
                 Databus <= X"FF"; 
                                             
                 DMA_RQ <= '1';              
-                READY  <= '1';              
+                READY  <= '0';              
                                             
                 Data_Read <= '0';           
                                             

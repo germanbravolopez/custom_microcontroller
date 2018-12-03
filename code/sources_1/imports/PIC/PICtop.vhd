@@ -13,6 +13,10 @@ entity PICtop is
         RS232_TX  : out std_logic;           -- RS232 TX line
         Switches  : out std_logic_vector(7 downto 0);   -- Switch status bargraph
         Temp      : out std_logic_vector(7 downto 0);   -- Display value for T_STAT
+        CuentInst : out std_logic_vector(11 downto 0);
+        A_sal       : out std_logic_vector(7 downto 0);
+                   B_sal       : out std_logic_vector(7 downto 0);
+                   ACC_sal         : out std_logic_vector(7 downto 0);
         Disp      : out std_logic_vector(1 downto 0));  -- Display activation for T_STAT
 end PICtop;
 
@@ -107,6 +111,9 @@ architecture behavior of PICtop is
       FlagZ       : out STD_LOGIC;
       FlagC       : out STD_LOGIC;
       FlagN       : out STD_LOGIC;
+      A_sal       : out std_logic_vector(7 downto 0);
+      B_sal       : out std_logic_vector(7 downto 0);
+      ACC_sal     : out std_logic_vector(7 downto 0);
       FlagE       : out STD_LOGIC);
   end component;
   
@@ -143,6 +150,7 @@ architecture behavior of PICtop is
       Index_Reg : in STD_LOGIC_VECTOR (7 downto 0);
       FlagZ     : in STD_LOGIC;
       FlagC     : in STD_LOGIC;
+      CuentInst : out std_logic_vector(11 downto 0);
       FlagN     : in STD_LOGIC;
       FlagE     : in STD_LOGIC);
   end component;
@@ -285,6 +293,9 @@ sinit <= not reset;
       FlagZ       => FlagZ,
       FlagC       => FlagC,
       FlagN       => FlagN,
+      ACC_sal     => ACC_sal,
+      B_sal       => B_sal,
+      A_sal       => A_sal,
       FlagE       => FlagE);
       
   ROM_inst : ROM
@@ -310,7 +321,8 @@ sinit <= not reset;
       ALU_op    => Alu_op,    
       Index_Reg => Index_Reg, 
       FlagZ     => FlagZ,     
-      FlagC     => FlagC,     
+      FlagC     => FlagC,
+      CuentInst => CuentInst,     
       FlagN     => FlagN,     
       FlagE     => FlagE);       
   
