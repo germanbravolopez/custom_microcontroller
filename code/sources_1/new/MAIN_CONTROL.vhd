@@ -50,8 +50,8 @@ end MAIN_CONTROL;
 
 architecture Behavioral of MAIN_CONTROL is
 
-    type State is (Idle, Dar_Buses, Fetch1, Fetch2, Decode, Execute1, Execute2, LecturaSalto, 
-        DecisionSalto, Execute3, LecturaSegundaPalabra, Espera_LSP, EscribirEnRam, Execute4, Stall, idle_desp_darbuses);
+    type State is (Idle, Dar_Buses, idle_desp_darbuses, Fetch1, Fetch2, Decode, Execute1, Execute2, LecturaSalto, 
+        DecisionSalto, Execute3, LecturaSegundaPalabra, Espera_LSP, EscribirEnRam, Execute4, Stall);
     
     signal CurrentState, NextState       : State;
     signal type_instruccion              : std_logic_vector (1 downto 0) := "00";
@@ -70,6 +70,15 @@ begin
 
 --To monitorize Cuenta Instruccion
 CuentInst <= std_logic_vector(Cuenta_Instruccion);
+
+FFs: process (Reset, Clk, NextState, CurrentState) 
+    begin
+        if Reset = '0' then
+            CurrentState <= Idle;
+        elsif Clk'event and Clk = '1' then
+            CurrentState <= NextState;
+        end if;
+    end process;
 
 Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag_mov_registros, DMA_Ready, EsperaStall) 
     begin
@@ -216,15 +225,6 @@ Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag
         end case;
     end process;
 
-FFs: process (Reset, Clk, NextState, CurrentState) 
-    begin
-        if Reset = '0' then
-            CurrentState <= Idle;
-        elsif Clk'event and Clk = '1' then
-            CurrentState <= NextState;
-        end if;
-    end process;
-
 Outputs: process (clk, reset) 
     begin
         if (Reset = '0') then
@@ -233,13 +233,13 @@ Outputs: process (clk, reset)
             case CurrentState is
                 when Idle =>
                 
-                if(dma_rq = '0') then
-                    if(flag_salto = '1') then
-                        Cuenta_Instruccion <= unsigned(registro_segunda);
-                    else
-                        Cuenta_Instruccion <= Cuenta_Instruccion + to_unsigned(1,12);
-                    end if;                
-                end if;
+                    if(dma_rq = '0') then
+                        if(flag_salto = '1') then
+                            Cuenta_Instruccion <= unsigned(registro_segunda);
+                        else
+                            Cuenta_Instruccion <= Cuenta_Instruccion + to_unsigned(1,12);
+                        end if;                
+                    end if;
                 
                     registro_segunda <= (others => '0');
                     
@@ -416,6 +416,11 @@ Outputs: process (clk, reset)
                     Databus <= (others => 'Z');
                     Ram_Addr <= (others => 'Z');
                     Ram_OE <= 'Z';
+                    --Rom_Addr <= (others => 'Z'); 
+                    Ram_Write <= 'Z';
+                    DMA_ACK <= '0';
+                    Send_Comm <= '0';
+                    ALU_OP <= nop;
                     if (instruccion = JMP_UNCOND) then
                         flag_salto <= '1';
                     else
@@ -432,6 +437,12 @@ Outputs: process (clk, reset)
                     Databus <= (others => 'Z');
                     Ram_Addr <= (others => 'Z');
                     Ram_OE <= 'Z';
+                    
+                    --Rom_Addr <= (others => 'Z'); 
+                    Ram_Write <= 'Z';
+                    DMA_ACK <= '0';
+                    Send_Comm <= '0';
+                    
                     if(flag_mov_registros = '1') then
                         case instruccion(2 downto 0) is
                             when DST_A => 
@@ -448,6 +459,11 @@ Outputs: process (clk, reset)
                     end if;
                                 
                 when LecturaSegundaPalabra =>
+                    --Rom_Addr <= (others => 'Z'); 
+                    Ram_Write <= 'Z';
+                    DMA_ACK <= '0';
+                    Send_Comm <= '0';
+
                     case instruccion(5) is
                         when '0' =>
                             case instruccion(4 downto 3) is

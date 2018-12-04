@@ -48,7 +48,7 @@ end DMA;
 
 architecture Behavioral of DMA is
 
-    type State is (Idle, Inicio_tx, aviso_envio1, envio1, envio2, aviso_envio2, inicio_rx, espabiladr, recibir, fin_rx, the_end);
+    type State is (Idle, Inicio_tx, aviso_envio1, envio1, envio2, aviso_envio2, inicio_rx, espabiladr, recibir, the_end);--fin_rx
     
     signal CurrentState, NextState       : State;
     signal count_rx                      : unsigned(1 downto 0) := "00";
@@ -85,28 +85,24 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                     NextState <= Inicio_tx;
                 end if;
             when aviso_envio1 =>
-                --if(tx_rdy'event and tx_rdy = '1') then
                 if (tx_rdy = '0') then   
                     NextState <= envio1;
                 else
                     NextState <= aviso_envio1;
                 end if;
             when envio1 =>
-                --if (tx_rdy'event and tx_rdy = '0') then
                 if (tx_rdy = '1') then  
                     NextState <= aviso_envio2;
                 else
                     NextState <= envio1;
                 end if;
             when aviso_envio2 =>
-                --if (tx_rdy'event and tx_rdy = '1') then
                 if (tx_rdy = '0') then  
                     NextState <= envio2;
                 else
                     NextState <= aviso_envio2;
                 end if;
             when envio2 =>
-                --if (tx_rdy'event and tx_rdy = '0') then
                 if (tx_rdy = '1') then  
                     NextState <= idle;
                 else
@@ -126,21 +122,21 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                 end if;
             when recibir =>
                 if(count_rx < "11") then
-                    NextState <= fin_rx;
+                    NextState <= idle;--fin_rx
                 elsif (count_rx = "11") then
                     nextstate <= the_end;
                 else
                     NextState <= recibir;
                 end if;
-            when fin_rx =>
-                if (dma_ack = '0') then
-                    NextState <= idle;
-                else
-                    NextState <= fin_rx;
-                end if;
+--            when fin_rx =>
+--                if (dma_ack = '0') then
+--                    NextState <= idle;
+--                else
+--                    NextState <= fin_rx;
+--                end if;
             when the_end =>
                 if (count_rx = "00") then
-                    NextState <= fin_rx;
+                    NextState <= idle;--fin_rx
                 else
                     NextState <= the_end;
                 end if;
@@ -151,112 +147,146 @@ Outputs: process (Clk, currentstate)
     begin
         case CurrentState is
             when Idle =>
-                OE <= 'Z';
+                --RX
+                Data_Read <= '0';
                 Write_en <= 'Z';
-                Address <= (others => 'Z');
-                Databus <= (others => 'Z');
                 
+                --TX
+                OE <= 'Z';
+                Valid_D <= '1';
+                TX_Data <= (others => 'Z');
+                
+                --Ambos
                 DMA_RQ <= '0';
                 READY  <= '1';
-                
-                Data_Read <= '0';
-
-                Valid_D <= '1';
-                TX_Data <= (others => 'Z');
-            when Inicio_tx =>
-                OE <= 'Z';
-                Write_en <= 'Z';
                 Address <= (others => 'Z');
                 Databus <= (others => 'Z');
                 
-                DMA_RQ <= '0';
-                READY  <= '0';
-                
+            when Inicio_tx =>
+                --RX
                 Data_Read <= '0';
-    
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= 'Z';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
-            when aviso_envio1 =>
-                OE <= '0';
-                Write_en <= 'Z';
-                Address <= dma_tx_buffer_msb;
-                Databus <= (others => 'Z');
                 
+                --Ambos
                 DMA_RQ <= '0';
                 READY  <= '0';
-                
-                Data_Read <= '0';
+                Address <= (others => 'Z');
+                Databus <= (others => 'Z');
 
+            when aviso_envio1 =>
+                --RX
+                Data_Read <= '0';
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= '0';
                 Valid_D <= '0';
                 TX_Data <= Databus;
-            when envio1 =>
-                OE <= '0';
-                Write_en <= 'Z';
-                Address <= dma_tx_buffer_msb;
-                Databus <= (others => 'Z');
                 
+                --Ambos
                 DMA_RQ <= '0';
                 READY  <= '0';
-                
+                Address <= dma_tx_buffer_msb;
+                --Databus <= (others => 'Z');
+
+            when envio1 =>
+                --RX
                 Data_Read <= '0';
-    
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= '0';
                 Valid_D <= '1';
                 TX_Data <= Databus;
-            when aviso_envio2 =>
-                OE <= '0';                  
-                Write_en <= 'Z';            
-                Address <= dma_tx_buffer_lsb;
-                Databus <= (others => 'Z'); 
-                                            
-                DMA_RQ <= '0';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '0';           
-                                            
-                Valid_D <= '0';             
-                TX_Data <= Databus;   
-            when envio2 =>
-                OE <= '0';
-                Write_en <= 'Z';
-                Address <= dma_tx_buffer_lsb;
-                Databus <= (others => 'Z');
                 
+                --Ambos
                 DMA_RQ <= '0';
                 READY  <= '0';
-                
+                Address <= dma_tx_buffer_msb;
+                --Databus <= (others => 'Z');
+                            
+            when aviso_envio2 =>
+                --RX
                 Data_Read <= '0';
-    
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= '0';
+                Valid_D <= '0';
+                TX_Data <= Databus;
+                
+                --Ambos
+                DMA_RQ <= '0';
+                READY  <= '0';
+                Address <= dma_tx_buffer_lsb;
+                --Databus <= (others => 'Z');
+                                           
+            when envio2 =>
+                --RX
+                Data_Read <= '0';
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= '0';
                 Valid_D <= '1';
-                TX_Data <= Databus;         
+                TX_Data <= Databus;
+                
+                --Ambos
+                DMA_RQ <= '0';
+                READY  <= '0';
+                Address <= dma_tx_buffer_lsb;
+                --Databus <= (others => 'Z');
+                            
             when Inicio_rx =>
-                OE <= 'Z';                  
-                Write_en <= 'Z';            
-                Address <= (others => 'Z'); 
-                Databus <= (others => 'Z'); 
-                                            
-                DMA_RQ <= '1';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '0';           
-                                            
-                Valid_D <= '1';             
+                --RX
+                Data_Read <= '0';
+                Write_en <= 'Z';
+                
+                --TX
+                OE <= 'Z';
+                Valid_D <= '1';
                 TX_Data <= (others => 'Z');
+                
+                --Ambos
+                DMA_RQ <= '1'; -- Solicitud de los buses
+                READY  <= '0';
+                Address <= (others => 'Z');
+                Databus <= (others => 'Z');
+
             when espabiladr =>
-                OE <= 'Z';                  
-                Write_en <= 'Z';            
-                Address <= (others => 'Z'); 
-                Databus <= (others => 'Z'); 
-                                            
-                DMA_RQ <= '1';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '1';           
-                                            
-                Valid_D <= '1';             
-                TX_Data <= (others => 'Z');  
+                --RX
+                Data_Read <= '1';
+                Write_en <= '0'; -- Todavía no escribe en RAM
+                
+                --TX
+                OE <= '1'; -- No se puede leer de la RAM tampoco
+                Valid_D <= '1';
+                TX_Data <= (others => 'Z');
+                
+                --Ambos
+                DMA_RQ <= '1';
+                READY  <= '0';
+                Address <= (others => 'Z');
+                Databus <= (others => 'Z');---------- mirar juancho
+
             when recibir =>
-                OE <= 'Z';                  
+                --RX
+                Data_Read <= '0';
                 Write_en <= '1';
+                
+                --TX
+                OE <= '1';
+                Valid_D <= '1';
+                TX_Data <= (others => 'Z');
+                
+                --Ambos
+                DMA_RQ <= '1';
+                READY  <= '0';                            
                 case count_rx is                                  
                     when "00"   =>    Address <= DMA_RX_BUFFER_MSB; 
                     when "01"   =>    Address <= DMA_RX_BUFFER_MID; 
@@ -264,40 +294,39 @@ Outputs: process (Clk, currentstate)
                     when others =>    Address <= (others => 'Z');   
                 end case;                                                       
                 Databus <= rcvd_data; 
-                                            
-                DMA_RQ <= '1';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '0';           
-                                            
-                Valid_D <= '1';             
-                TX_Data <= (others => 'Z');  
-            when fin_rx =>
-                OE <= 'Z';                  
-                Write_en <= 'Z';            
-                Address <= (others => 'Z'); 
-                Databus <= (others => 'Z'); 
-                                            
-                DMA_RQ <= '0';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '0';           
-                                            
-                Valid_D <= '1';             
-                TX_Data <= (others => 'Z'); 
+                
+--            when fin_rx =>
+--                --RX
+--                Data_Read <= '0';
+--                Write_en <= 'Z';
+                
+--                --TX
+--                OE <= '1';
+--                Valid_D <= '1';
+--                TX_Data <= (others => 'Z');
+                
+--                --Ambos
+--                DMA_RQ <= '0';
+--                READY  <= '0';
+--                Address <= (others => 'Z');
+--                Databus <= (others => 'Z');
+                                       
             when the_end =>
-                OE <= 'Z';                  
-                Write_en <= '1';            
-                Address <= X"03"; 
-                Databus <= X"FF"; 
-                                            
-                DMA_RQ <= '1';              
-                READY  <= '0';              
-                                            
-                Data_Read <= '0';           
-                                            
-                Valid_D <= '1';             
-                TX_Data <= (others => 'Z'); 
+                --RX
+                Data_Read <= '0';
+                Write_en <= '1';
+                
+                --TX
+                OE <= '1';
+                Valid_D <= '1';
+                TX_Data <= (others => 'Z');
+                
+                --Ambos
+                DMA_RQ <= '1';
+                READY  <= '0';
+                Address <= X"03";
+                Databus <= X"FF";
+                            
         end case;
     end process;
     
