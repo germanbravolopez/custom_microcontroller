@@ -35,6 +35,7 @@ entity MAIN_CONTROL is
            RAM_Write : out STD_LOGIC;
            RAM_OE    : out STD_LOGIC;
            Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
+--           Databus_s : out std_logic_vector(7 downto 0);
            DMA_RQ    : in STD_LOGIC;
            DMA_ACK   : out STD_LOGIC;
            SEND_comm : out STD_LOGIC;
@@ -62,16 +63,19 @@ architecture Behavioral of MAIN_CONTROL is
     signal registro_segunda              : std_logic_vector(11 downto 0) := (others => '0');
     
     signal flagZretenido                 : std_logic := '0';
-    signal EsperaStall                   : unsigned(2 downto 0);
+    signal EsperaStall                   : unsigned(2 downto 0) := (others => '0');
     
     signal flagzretenido2                : std_logic := '0';
 
 begin
 
---To monitorize Cuenta Instruccion
+-- To monitorize Cuenta Instruccion
 CuentInst <= std_logic_vector(Cuenta_Instruccion);
+--Databus_s <= Databus;
 
-FFs: process (Reset, Clk, NextState, CurrentState) 
+Rom_Addr <= std_logic_vector(Cuenta_Instruccion);
+
+FFs: process (Reset, Clk, NextState) 
     begin
         if Reset = '0' then
             CurrentState <= Idle;
@@ -80,7 +84,8 @@ FFs: process (Reset, Clk, NextState, CurrentState)
         end if;
     end process;
 
-Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag_mov_registros, DMA_Ready, EsperaStall) 
+
+Next_process: process (CurrentState, dma_rq, type_instruccion, instruccion, flag_mov_registros, DMA_Ready, EsperaStall) 
     begin
         case CurrentState is
             when Idle =>
@@ -153,24 +158,12 @@ Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag
                 end if;
 
             when Execute2 =>
---                if (DMA_RQ = '1') then
---                    NextState <= dar_buses;
---                else
-                    NextState <= lecturasalto;
---                end if;
+                NextState <= lecturasalto;
             when LecturaSalto =>
---                if (DMA_RQ = '1') then
---                    NextState <= dar_buses;
---                else
-                    NextState <= DecisionSalto;
---                end if;
+                NextState <= DecisionSalto;
             when DecisionSalto =>
---                if (DMA_RQ = '1') then
---                    NextState <= dar_buses;
---                else
-                    NextState <= idle;
---                end if;
-                
+                NextState <= idle;
+                    
             when Execute3 =>
                     if(flag_mov_registros = '1') then
                         if (DMA_RQ = '1') then
@@ -179,28 +172,16 @@ Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag
                             NextState <= Idle;
                         end if;
                     else
---                        if (DMA_READY = '1') then
-                            NextState <= LecturaSegundaPalabra;
---                        else
---                            NextState <= Execute3;
---                        end if;
+                        NextState <= LecturaSegundaPalabra;
                     end if;
             when LecturaSegundaPalabra => -- Tiene que esperar a la ram cuando entre a leer la segunda palabra
---                if (DMA_RQ = '1') then
---                    NextState <= dar_buses;
---                else
-                    if instruccion(5) = '0' then
-                        NextState <= Espera_LSP;
-                    else
-                        NextState <= EscribirEnRam;
-                    end if;
---                end if;
+                if instruccion(5) = '0' then
+                    NextState <= Espera_LSP;
+                else
+                    NextState <= EscribirEnRam;
+                end if;
             when Espera_LSP =>
---                if (DMA_RQ = '1') then
---                    NextState <= dar_buses;
---                else
-                    NextState <= idle;
---                end if;
+                NextState <= idle;
             when EscribirEnRam =>
                 if (DMA_RQ = '1') then
                     NextState <= dar_buses;
@@ -224,8 +205,10 @@ Next_process: process (currentstate, dma_rq, type_instruccion, instruccion, flag
                 end if;
         end case;
     end process;
+    
 
-Outputs: process (clk, reset) 
+Outputs: process (clk, reset, CurrentState, dma_rq, flag_salto, flagZ, flagZretenido, flagZretenido2, rom_data, 
+         type_instruccion, flag_mov_registros, Instruccion, Cuenta_Instruccion, registro_segunda, EsperaStall, index_reg) 
     begin
         if (Reset = '0') then
             Cuenta_Instruccion <= (others => '1');
@@ -244,7 +227,6 @@ Outputs: process (clk, reset)
                     registro_segunda <= (others => '0');
                     
                     Databus <= (others => 'Z');
-                    Rom_Addr <= (others => 'Z'); 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -254,19 +236,11 @@ Outputs: process (clk, reset)
                     
                     flagZretenido <= '0';
                     flagzretenido2 <= '0';
-                when idle_desp_darbuses =>
---                    if(dma_rq = '0') then
---                        if(flag_salto = '1') then
---                            Cuenta_Instruccion <= unsigned(registro_segunda);
---                        else
---                            Cuenta_Instruccion <= Cuenta_Instruccion + to_unsigned(1,12);
---                        end if;                
---                    end if;
                     
+                when idle_desp_darbuses =>
                     registro_segunda <= (others => '0');
                     
                     Databus <= (others => 'Z');
-                    Rom_Addr <= (others => 'Z'); 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -278,7 +252,6 @@ Outputs: process (clk, reset)
                                     
                 when dar_buses =>
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -292,7 +265,6 @@ Outputs: process (clk, reset)
                     
                 when fetch1 =>
                     Databus <= (others => 'Z');
-                    Rom_Addr <= std_logic_vector(Cuenta_Instruccion);
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -308,7 +280,6 @@ Outputs: process (clk, reset)
                     
                 when fetch2 =>
                     Databus <= (others => 'Z');
-                    --Rom_Addr ;
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -341,7 +312,6 @@ Outputs: process (clk, reset)
                     end if;
                 
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -353,7 +323,6 @@ Outputs: process (clk, reset)
                                        -- there was a jumping instruction, what if there isn't.
                 when execute1 =>
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -389,9 +358,7 @@ Outputs: process (clk, reset)
                             alu_op <= nop;
                     end case;
                     
-                when execute2 =>
-                    Rom_Addr <= std_logic_vector(Cuenta_Instruccion);
-                    
+                when execute2 =>                    
                     Databus <= (others => 'Z');
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
@@ -404,7 +371,6 @@ Outputs: process (clk, reset)
                     registro_segunda <= rom_Data;
                     
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -416,7 +382,6 @@ Outputs: process (clk, reset)
                     Databus <= (others => 'Z');
                     Ram_Addr <= (others => 'Z');
                     Ram_OE <= 'Z';
-                    --Rom_Addr <= (others => 'Z'); 
                     Ram_Write <= 'Z';
                     DMA_ACK <= '0';
                     Send_Comm <= '0';
@@ -430,15 +395,11 @@ Outputs: process (clk, reset)
                             flag_salto <= '0';
                         end if;
                     end if;
-                    
-                    --flagZretenido <= '0';
-                    
+                                        
                 when Execute3 =>
                     Databus <= (others => 'Z');
                     Ram_Addr <= (others => 'Z');
                     Ram_OE <= 'Z';
-                    
-                    --Rom_Addr <= (others => 'Z'); 
                     Ram_Write <= 'Z';
                     DMA_ACK <= '0';
                     Send_Comm <= '0';
@@ -454,12 +415,9 @@ Outputs: process (clk, reset)
                             when others => 
                                 alu_op <= nop;
                         end case;
-                    else 
-                        ROM_Addr <= std_logic_vector(Cuenta_instruccion);
                     end if;
                                 
                 when LecturaSegundaPalabra =>
-                    --Rom_Addr <= (others => 'Z'); 
                     Ram_Write <= 'Z';
                     DMA_ACK <= '0';
                     Send_Comm <= '0';
@@ -488,35 +446,35 @@ Outputs: process (clk, reset)
                                     ram_addr <= rom_data(7 downto 0);
                                     ram_oe <= '0';
                                     
-                                    case instruccion(2 downto 0) is
-                                        when DST_ACC =>
-                                            alu_op <= op_ldacc;      
-                                        when DST_A =>
-                                            alu_op <= op_lda;
-                                        when DST_B =>
-                                            alu_op <= op_ldb;        
-                                        when DST_INDX =>
-                                            alu_op <= op_ldid;
-                                        when others => 
-                                            alu_op <= nop;
-                                    end case;
+--                                    case instruccion(2 downto 0) is
+--                                        when DST_ACC =>
+--                                            alu_op <= op_ldacc;      
+--                                        when DST_A =>
+--                                            alu_op <= op_lda;
+--                                        when DST_B =>
+--                                            alu_op <= op_ldb;        
+--                                        when DST_INDX =>
+--                                            alu_op <= op_ldid;
+--                                        when others => 
+--                                            alu_op <= nop;
+--                                    end case;
                                 when SRC_INDXD_MEM =>
                                     Databus <= (others => 'Z');
                                     ram_addr <= std_logic_vector(unsigned(rom_data(7 downto 0)) + unsigned(index_reg(7 downto 0)));
                                     ram_oe <= '0';
                                     
-                                    case instruccion(2 downto 0) is
-                                        when DST_ACC =>
-                                            alu_op <= op_ldacc;      
-                                        when DST_A =>
-                                            alu_op <= op_lda;
-                                        when DST_B =>
-                                            alu_op <= op_ldb;        
-                                        when DST_INDX =>
-                                            alu_op <= op_ldid;
-                                        when others => 
-                                            alu_op <= nop;
-                                    end case;
+--                                    case instruccion(2 downto 0) is
+--                                        when DST_ACC =>
+--                                            alu_op <= op_ldacc;      
+--                                        when DST_A =>
+--                                            alu_op <= op_lda;
+--                                        when DST_B =>
+--                                            alu_op <= op_ldb;        
+--                                        when DST_INDX =>
+--                                            alu_op <= op_ldid;
+--                                        when others => 
+--                                            alu_op <= nop;
+--                                    end case;
                                 when others =>
                                     Databus <= (others => 'Z');
                                     Ram_Addr <= (others => 'Z');
@@ -536,10 +494,23 @@ Outputs: process (clk, reset)
                 when Espera_LSP =>
                     if(instruccion(4 downto 3) = SRC_INDXD_MEM or instruccion(4 downto 3) = SRC_MEM) then
                         Ram_OE <= '0';
+                        case instruccion(2 downto 0) is --
+                            when DST_ACC =>
+                                alu_op <= op_ldacc;      
+                            when DST_A =>
+                                alu_op <= op_lda;
+                            when DST_B =>
+                                alu_op <= op_ldb;        
+                            when DST_INDX =>
+                                alu_op <= op_ldid;
+                            when others => 
+                                alu_op <= nop;
+                        end case;                      --
                     else
                         Ram_OE <= 'Z';
                     end if;
                     
+                
                 when EscribirEnRam =>
                     Ram_OE <= 'Z';
                     Databus <= (others => 'Z');
@@ -558,7 +529,6 @@ Outputs: process (clk, reset)
                     
                 when Execute4 =>
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';
@@ -570,7 +540,6 @@ Outputs: process (clk, reset)
                     
                 when Stall =>
                     Databus <= (others => 'Z');
-                    --Rom_Addr <= 
                     Ram_Addr <= (others => 'Z');
                     Ram_Write <= 'Z';
                     Ram_OE <= 'Z';

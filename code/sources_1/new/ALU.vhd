@@ -77,7 +77,9 @@ ALU_Process: process(clk, reset)
                     FlagE <= '0';
                     Databus <= (others => 'Z');
                 when op_lda =>   
-                    A <= unsigned(Databus);
+--                    if (Databus /= "ZZZZZZZZ") then    -- chapuzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        A <= unsigned(Databus);
+--                    end if;
                 when op_ldb =>   
                     B <= unsigned(Databus);    
                 when op_ldacc => 

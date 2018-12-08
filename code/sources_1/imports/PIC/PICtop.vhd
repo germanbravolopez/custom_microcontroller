@@ -17,6 +17,7 @@ entity PICtop is
         A_sal       : out std_logic_vector(7 downto 0);
                    B_sal       : out std_logic_vector(7 downto 0);
                    ACC_sal         : out std_logic_vector(7 downto 0);
+                   Databus_s : out std_logic_vector(7 downto 0);
         Disp      : out std_logic_vector(1 downto 0));  -- Display activation for T_STAT
 end PICtop;
 
@@ -142,6 +143,7 @@ architecture behavior of PICtop is
       RAM_Write : out STD_LOGIC;
       RAM_OE    : out STD_LOGIC;
       Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
+--      Databus_s : out std_logic_vector(7 downto 0);
       DMA_RQ    : in STD_LOGIC;
       DMA_ACK   : out STD_LOGIC;
       SEND_comm : out STD_LOGIC;
@@ -206,9 +208,13 @@ architecture behavior of PICtop is
 
 begin  -- RTL
 
+Databus_s <= Databus;
+
 temp_display: process (reset, clk) -- cada 1 ms se muestra por cada display el valor de su temperatura
     begin
         if (reset = '0') then
+            temp <= '0' & temp_l;
+            disp <= "00";
             counter_disp <= 0;
         elsif (clk'event and clk = '1') then
             if (counter_disp = 10000) then
@@ -314,6 +320,7 @@ sinit <= not reset;
       RAM_Write => Write_en, 
       RAM_OE    => OE,    
       Databus   => Databus,   
+--      Databus_s => Databus_s,
       DMA_RQ    => DMA_RQ,    
       DMA_ACK   => DMA_ACK,   
       SEND_comm => SEND_comm, 

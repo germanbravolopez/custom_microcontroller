@@ -121,9 +121,9 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                     NextState <= espabiladr;
                 end if;
             when recibir =>
-                if(count_rx < "11") then
+                if(count_rx < "10") then
                     NextState <= idle;--fin_rx
-                elsif (count_rx = "11") then
+                elsif (count_rx = "10") then
                     nextstate <= the_end;
                 else
                     NextState <= recibir;
@@ -143,8 +143,10 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
         end case;
     end process;
 
-Outputs: process (Clk, currentstate) 
+Outputs: process (currentstate, databus, count_rx, rcvd_data) 
     begin
+        Databus <= (others => 'Z');
+        
         case CurrentState is
             when Idle =>
                 --RX
@@ -334,7 +336,7 @@ CounterRecibir : process(clk, Reset, CurrentState)
     begin
         if (Reset = '0') then
             Count_rx <= (others => '0');
-        elsif (clk'event and clk = '0') then -- estaba en los pulsos de bajada
+        elsif (clk'event and clk = '1') then -- estaba en los pulsos de bajada
             if (Count_rx = "11") then
                 Count_rx <= (others => '0');
             elsif (CurrentState = recibir) then

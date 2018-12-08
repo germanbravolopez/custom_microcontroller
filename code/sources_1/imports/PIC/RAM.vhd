@@ -41,12 +41,13 @@ p_escritura : process (clk, reset)
     begin
         if (Reset = '0') then
             for I in 0 to 63 loop
-                if (I = 49) then  -- La posicion 49 decimal es la x"31" (en hex)
-                    ram_specific(49) <= "00100000"; -- Inicializar a 20 grados
-                else
+--                if (I = 49) then  -- La posicion 49 decimal es la x"31" (en hex)
+--                    ram_specific(49) <= "00100000"; -- Inicializar a 20 grados
+--                else
                     ram_specific(I) <= (others => '0');
-                end if;
+--                end if;
             end loop;
+            ram_specific(49) <= "00100000";
         elsif (clk'event and clk = '1') then
             if (write_en = '1') then
                 if (chipset = '0') then
