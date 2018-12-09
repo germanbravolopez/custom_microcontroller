@@ -35,7 +35,6 @@ entity MAIN_CONTROL is
            RAM_Write : out STD_LOGIC;
            RAM_OE    : out STD_LOGIC;
            Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
---           Databus_s : out std_logic_vector(7 downto 0);
            DMA_RQ    : in STD_LOGIC;
            DMA_ACK   : out STD_LOGIC;
            SEND_comm : out STD_LOGIC;
@@ -71,7 +70,6 @@ begin
 
 -- To monitorize Cuenta Instruccion
 CuentInst <= std_logic_vector(Cuenta_Instruccion);
---Databus_s <= Databus;
 
 Rom_Addr <= std_logic_vector(Cuenta_Instruccion);
 
@@ -445,36 +443,10 @@ Outputs: process (clk, reset, CurrentState, dma_rq, flag_salto, flagZ, flagZrete
                                     Databus <= (others => 'Z');
                                     ram_addr <= rom_data(7 downto 0);
                                     ram_oe <= '0';
-                                    
---                                    case instruccion(2 downto 0) is
---                                        when DST_ACC =>
---                                            alu_op <= op_ldacc;      
---                                        when DST_A =>
---                                            alu_op <= op_lda;
---                                        when DST_B =>
---                                            alu_op <= op_ldb;        
---                                        when DST_INDX =>
---                                            alu_op <= op_ldid;
---                                        when others => 
---                                            alu_op <= nop;
---                                    end case;
                                 when SRC_INDXD_MEM =>
                                     Databus <= (others => 'Z');
                                     ram_addr <= std_logic_vector(unsigned(rom_data(7 downto 0)) + unsigned(index_reg(7 downto 0)));
                                     ram_oe <= '0';
-                                    
---                                    case instruccion(2 downto 0) is
---                                        when DST_ACC =>
---                                            alu_op <= op_ldacc;      
---                                        when DST_A =>
---                                            alu_op <= op_lda;
---                                        when DST_B =>
---                                            alu_op <= op_ldb;        
---                                        when DST_INDX =>
---                                            alu_op <= op_ldid;
---                                        when others => 
---                                            alu_op <= nop;
---                                    end case;
                                 when others =>
                                     Databus <= (others => 'Z');
                                     Ram_Addr <= (others => 'Z');
@@ -509,7 +481,6 @@ Outputs: process (clk, reset, CurrentState, dma_rq, flag_salto, flagZ, flagZrete
                     else
                         Ram_OE <= 'Z';
                     end if;
-                    
                 
                 when EscribirEnRam =>
                     Ram_OE <= 'Z';

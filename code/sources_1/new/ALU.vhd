@@ -53,7 +53,8 @@ ACC_sal <= std_logic_vector(ACC);
 
 Index_reg <= std_logic_vector(Index);
 
-ALU_Process: process(clk, reset) 
+ALU_Process: process(clk, reset, command_alu, databus, A, ACC) 
+
     variable ACC_internal : unsigned (8 downto 0);
     
     begin
@@ -77,9 +78,7 @@ ALU_Process: process(clk, reset)
                     FlagE <= '0';
                     Databus <= (others => 'Z');
                 when op_lda =>   
---                    if (Databus /= "ZZZZZZZZ") then    -- chapuzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                        A <= unsigned(Databus);
---                    end if;
+                    A <= unsigned(Databus);
                 when op_ldb =>   
                     B <= unsigned(Databus);    
                 when op_ldacc => 
@@ -88,13 +87,10 @@ ALU_Process: process(clk, reset)
                     Index <= unsigned(Databus);
                 when op_mvacc2id =>
                     Index <= ACC;
-                    Databus <= (others => 'Z');
                 when op_mvacc2a =>
                     A <= ACC;
-                    Databus <= (others => 'Z');
                 when op_mvacc2b =>
                     B <= ACC;
-                    Databus <= (others => 'Z');
                 when op_add =>
                     ACC_internal := ('0' & A) + ('0' & B);
                     ACC <= ACC_internal(7 downto 0);
@@ -113,7 +109,6 @@ ALU_Process: process(clk, reset)
                         FlagN <= '0';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_sub =>
                     ACC_internal := ('0' & A) - ('0' & B);
                     ACC <= ACC_internal(7 downto 0);
@@ -132,13 +127,10 @@ ALU_Process: process(clk, reset)
                         FlagN <= '0';                      
                     end if;   
                     
-                    Databus <= (others => 'Z'); 
                 when op_shiftl =>
                     ACC <= ACC(6 downto 0) & '0';
-                    Databus <= (others => 'Z');
                 when op_shiftr =>
                     ACC <= '0' & ACC(7 downto 1);
-                    Databus <= (others => 'Z');
                 when op_and =>
                     ACC_internal := ('0' & A) and ('0' & B);
                     ACC <= ACC_internal(7 downto 0);
@@ -148,7 +140,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_or =>
                     ACC_internal := ('0' & A) or ('0' & B);
                     ACC <= ACC_internal(7 downto 0);
@@ -158,7 +149,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_xor =>
                     ACC_internal := ('0' & A) xor ('0' & B);
                     ACC <= ACC_internal(7 downto 0);
@@ -168,7 +158,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_cmpe =>            
                     if (A = B) then
                         FlagZ <= '1';
@@ -176,7 +165,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_cmpg =>                  
                     if (A > B) then  
                         FlagZ <= '1';
@@ -184,7 +172,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;  
                     
-                    Databus <= (others => 'Z');        
                 when op_cmpl =>                  
                     if (A < B) then  
                         FlagZ <= '1';
@@ -192,7 +179,6 @@ ALU_Process: process(clk, reset)
                         FlagZ <= '0';
                     end if;  
                     
-                    Databus <= (others => 'Z');
                 when op_ascii2bin =>
                     if (to_unsigned(48, 8) < A) and (A < to_unsigned(57, 8)) then
                         ACC <= A - to_unsigned(48, 8);
@@ -201,7 +187,6 @@ ALU_Process: process(clk, reset)
                         FlagE <= '1';
                     end if;
                     
-                    Databus <= (others => 'Z');
                 when op_bin2ascii =>
                     if (to_unsigned(0, 8) < A) and (A < to_unsigned(9, 8)) then
                         ACC <= A + to_unsigned(48, 8);                             
@@ -210,7 +195,6 @@ ALU_Process: process(clk, reset)
                         FlagE <= '1';                                            
                     end if;  
                     
-                    Databus <= (others => 'Z');                                                    
                 when op_oeacc =>
                     Databus <= std_logic_vector(ACC);
             end case;

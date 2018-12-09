@@ -26,7 +26,7 @@ ARCHITECTURE behavior OF RAM IS
 BEGIN
 
 -- chipset = 1 para la segunda memoria.
-p_chipset : process (Reset, address)
+p_chipset: process (Reset, address)
     begin
         if (Reset = '0') then
             chipset <= '0';
@@ -37,17 +37,13 @@ p_chipset : process (Reset, address)
         end if;
     end process;
 
-p_escritura : process (clk, reset) 
+p_escritura: process (clk, reset, chipset, databus) 
     begin
         if (Reset = '0') then
             for I in 0 to 63 loop
---                if (I = 49) then  -- La posicion 49 decimal es la x"31" (en hex)
---                    ram_specific(49) <= "00100000"; -- Inicializar a 20 grados
---                else
-                    ram_specific(I) <= (others => '0');
---                end if;
+                ram_specific(I) <= (others => '0');
             end loop;
-            ram_specific(49) <= "00100000";
+            ram_specific(49) <= "00100000"; -- La posicion 49 decimal es la x"31" (en hex). 20 grados
         elsif (clk'event and clk = '1') then
             if (write_en = '1') then
                 if (chipset = '0') then
@@ -59,7 +55,7 @@ p_escritura : process (clk, reset)
         end if;
     end process;
 
-p_lectura : process (clk, reset, address, chipset, oe) -- la memoria tiene que ser síncrona 
+p_lectura: process (clk, reset, address, chipset, oe) -- la memoria tiene que ser síncrona 
     begin                                       -- para que Xilinx lo sintetice en los bloques reservados
         if (reset = '0') then
             databus <= (others => 'Z');
@@ -136,5 +132,5 @@ Switches <= ram_specific(23)(0 downto 0) &
             ram_specific(17)(0 downto 0) &
             ram_specific(16)(0 downto 0);
 
-END behavior;
+end behavior;
 

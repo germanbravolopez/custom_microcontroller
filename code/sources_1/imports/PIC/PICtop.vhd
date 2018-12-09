@@ -143,7 +143,6 @@ architecture behavior of PICtop is
       RAM_Write : out STD_LOGIC;
       RAM_OE    : out STD_LOGIC;
       Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
---      Databus_s : out std_logic_vector(7 downto 0);
       DMA_RQ    : in STD_LOGIC;
       DMA_ACK   : out STD_LOGIC;
       SEND_comm : out STD_LOGIC;
@@ -320,7 +319,6 @@ sinit <= not reset;
       RAM_Write => Write_en, 
       RAM_OE    => OE,    
       Databus   => Databus,   
---      Databus_s => Databus_s,
       DMA_RQ    => DMA_RQ,    
       DMA_ACK   => DMA_ACK,   
       SEND_comm => SEND_comm, 

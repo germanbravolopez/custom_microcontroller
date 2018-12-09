@@ -53,15 +53,14 @@ architecture Behavioral of DMA is
     signal CurrentState, NextState       : State;
     signal count_rx                      : unsigned(1 downto 0) := "00";
     signal Next_clk                      : unsigned(1 downto 0) := "00";
-    --signal RegistroDatos                 : std_logic_vector(23 downto 0) := (others => 'Z'); -- Almacenar  temporalmente los datos a enviar y recibir
     
 begin
 
-FFs: process (Reset, Clk, NextState, CurrentState) 
+FFs: process (Reset, Clk, NextState) 
     begin
-        if Reset = '0' then
+        if (Reset = '0') then
             CurrentState <= Idle;
-        elsif Clk'event and Clk = '1' then
+        elsif (Clk'event and Clk = '1') then
             CurrentState <= NextState;
         end if;
     end process;
@@ -128,12 +127,6 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                 else
                     NextState <= recibir;
                 end if;
---            when fin_rx =>
---                if (dma_ack = '0') then
---                    NextState <= idle;
---                else
---                    NextState <= fin_rx;
---                end if;
             when the_end =>
                 if (count_rx = "00") then
                     NextState <= idle;--fin_rx
@@ -143,10 +136,9 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
         end case;
     end process;
 
-Outputs: process (currentstate, databus, count_rx, rcvd_data) 
+Outputs: process (CurrentState, databus, count_rx, rcvd_data) 
     begin
-        Databus <= (others => 'Z');
-        
+    Databus <= (others => 'Z');
         case CurrentState is
             when Idle =>
                 --RX
@@ -296,22 +288,6 @@ Outputs: process (currentstate, databus, count_rx, rcvd_data)
                     when others =>    Address <= (others => 'Z');   
                 end case;                                                       
                 Databus <= rcvd_data; 
-                
---            when fin_rx =>
---                --RX
---                Data_Read <= '0';
---                Write_en <= 'Z';
-                
---                --TX
---                OE <= '1';
---                Valid_D <= '1';
---                TX_Data <= (others => 'Z');
-                
---                --Ambos
---                DMA_RQ <= '0';
---                READY  <= '0';
---                Address <= (others => 'Z');
---                Databus <= (others => 'Z');
                                        
             when the_end =>
                 --RX
@@ -328,15 +304,14 @@ Outputs: process (currentstate, databus, count_rx, rcvd_data)
                 READY  <= '0';
                 Address <= X"03";
                 Databus <= X"FF";
-                            
         end case;
     end process;
     
-CounterRecibir : process(clk, Reset, CurrentState) 
+CounterRecibir: process(clk, Reset, CurrentState) 
     begin
         if (Reset = '0') then
             Count_rx <= (others => '0');
-        elsif (clk'event and clk = '1') then -- estaba en los pulsos de bajada
+        elsif (clk'event and clk = '1') then
             if (Count_rx = "11") then
                 Count_rx <= (others => '0');
             elsif (CurrentState = recibir) then
