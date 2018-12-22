@@ -41,7 +41,7 @@ entity DMA is
            Address   : out STD_LOGIC_VECTOR (7 downto 0);
            Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
            Write_en  : out STD_LOGIC;
-           OE        : out STD_LOGIC;
+           OE_DMA    : out STD_LOGIC;
            DMA_RQ    : out STD_LOGIC;
            READY     : out STD_LOGIC);
 end DMA;
@@ -143,10 +143,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when Idle =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= 'Z';
+                OE_DMA <= '1';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 
@@ -159,10 +159,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when Inicio_tx =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= 'Z';
+                OE_DMA <= '1';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 
@@ -175,10 +175,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when aviso_envio1 =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= '0';
+                OE_DMA <= '0';
                 Valid_D <= '0';
                 TX_Data <= Databus;
                 
@@ -191,10 +191,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when envio1 =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= '0';
+                OE_DMA <= '0';
                 Valid_D <= '1';
                 TX_Data <= Databus;
                 
@@ -207,10 +207,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when aviso_envio2 =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= '0';
+                OE_DMA <= '0';
                 Valid_D <= '0';
                 TX_Data <= Databus;
                 
@@ -223,10 +223,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when envio2 =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= '0';
+                OE_DMA <= '0';
                 Valid_D <= '1';
                 TX_Data <= Databus;
                 
@@ -239,10 +239,10 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
             when Inicio_rx =>
                 --RX
                 Data_Read <= '0';
-                Write_en <= 'Z';
+                Write_en <= '0';
                 
                 --TX
-                OE <= 'Z';
+                OE_DMA <= '1';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 
@@ -258,7 +258,7 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 Write_en <= '0'; -- Todavía no escribe en RAM
                 
                 --TX
-                OE <= '1'; -- No se puede leer de la RAM tampoco
+                OE_DMA <= '1'; -- No se puede leer de la RAM tampoco
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 
@@ -274,7 +274,7 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 Write_en <= '1';
                 
                 --TX
-                OE <= '1';
+                OE_DMA <= '1';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 
@@ -295,7 +295,7 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 Write_en <= '1';
                 
                 --TX
-                OE <= '1';
+                OE_DMA <= '1';
                 Valid_D <= '1';
                 TX_Data <= (others => 'Z');
                 

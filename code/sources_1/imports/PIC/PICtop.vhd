@@ -13,12 +13,12 @@ entity PICtop is
         RS232_TX  : out std_logic;           -- RS232 TX line
         Switches  : out std_logic_vector(7 downto 0);   -- Switch status bargraph
         Temp      : out std_logic_vector(7 downto 0);   -- Display value for T_STAT
-        CuentInst : out std_logic_vector(11 downto 0);
-        A_sal       : out std_logic_vector(7 downto 0);
-                   B_sal       : out std_logic_vector(7 downto 0);
-                   ACC_sal         : out std_logic_vector(7 downto 0);
-                   Databus_s : out std_logic_vector(7 downto 0);
-        Disp      : out std_logic_vector(1 downto 0));  -- Display activation for T_STAT
+--        CuentInst : out std_logic_vector(11 downto 0);
+--        A_sal       : out std_logic_vector(7 downto 0);
+--                   B_sal       : out std_logic_vector(7 downto 0);
+--                   ACC_sal         : out std_logic_vector(7 downto 0);
+--                   Databus_s : out std_logic_vector(7 downto 0);
+        Disp      : out std_logic_vector(7 downto 0));  -- Display activation for T_STAT
 end PICtop;
 
 architecture behavior of PICtop is
@@ -63,8 +63,10 @@ architecture behavior of PICtop is
     PORT (
       Clk      : in    std_logic;
       Reset    : in    std_logic;
-      write_en : in    std_logic;
-      oe       : in    std_logic;
+      we_dma   : in    std_logic;
+      we_cpu   : in    std_logic;
+      oe_cpu   : in    std_logic;
+      oe_dma   : in    std_logic;
       address  : in    std_logic_vector(7 downto 0);
       databus  : inout std_logic_vector(7 downto 0);
       Switches : out   std_logic_vector(7 downto 0);
@@ -93,7 +95,7 @@ architecture behavior of PICtop is
       Address   : out STD_LOGIC_VECTOR (7 downto 0);
       Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
       Write_en  : out STD_LOGIC;
-      OE        : out STD_LOGIC;
+      OE_DMA    : out STD_LOGIC;
       DMA_RQ    : out STD_LOGIC;
       READY     : out STD_LOGIC);
   end component;
@@ -112,9 +114,9 @@ architecture behavior of PICtop is
       FlagZ       : out STD_LOGIC;
       FlagC       : out STD_LOGIC;
       FlagN       : out STD_LOGIC;
-      A_sal       : out std_logic_vector(7 downto 0);
-      B_sal       : out std_logic_vector(7 downto 0);
-      ACC_sal     : out std_logic_vector(7 downto 0);
+--      A_sal       : out std_logic_vector(7 downto 0);
+--      B_sal       : out std_logic_vector(7 downto 0);
+--      ACC_sal     : out std_logic_vector(7 downto 0);
       FlagE       : out STD_LOGIC);
   end component;
   
@@ -151,7 +153,7 @@ architecture behavior of PICtop is
       Index_Reg : in STD_LOGIC_VECTOR (7 downto 0);
       FlagZ     : in STD_LOGIC;
       FlagC     : in STD_LOGIC;
-      CuentInst : out std_logic_vector(11 downto 0);
+--      CuentInst : out std_logic_vector(11 downto 0);
       FlagN     : in STD_LOGIC;
       FlagE     : in STD_LOGIC);
   end component;
@@ -178,8 +180,10 @@ architecture behavior of PICtop is
   signal Data_read : std_logic;
   
   -- DMA-RAM
-  signal OE        : std_logic;
-  signal Write_en  : std_logic;
+  signal OE_DMA    : std_logic;
+  signal OE_CPU    : std_logic;
+  signal WE_DMA    : std_logic;
+  signal WE_CPU    : std_logic;
   
   -- DMA-
   signal Send_comm   : std_logic;
@@ -207,22 +211,22 @@ architecture behavior of PICtop is
 
 begin  -- RTL
 
-Databus_s <= Databus;
+--Databus_s <= Databus;
 
 temp_display: process (reset, clk) -- cada 1 ms se muestra por cada display el valor de su temperatura
     begin
         if (reset = '0') then
-            temp <= '0' & temp_l;
-            disp <= "00";
+            temp <= "00000000";
+            disp <= "11111100";
             counter_disp <= 0;
         elsif (clk'event and clk = '1') then
             if (counter_disp = 10000) then
-                temp <= '0' & temp_h;
-                disp <= "01";
+                temp <= '1' & temp_h;
+                disp <= "11111101";
                 counter_disp <= counter_disp + 1;
             elsif (counter_disp = 20000) then
-                temp <= '0' & temp_l;
-                disp <= "00";
+                temp <= '1' & temp_l;
+                disp <= "11111110";
                 counter_disp <= 0;
             else
                 counter_disp <= counter_disp + 1;
@@ -259,8 +263,10 @@ sinit <= not reset;
     port map (
       Clk      => Clk,
       Reset    => Reset,
-      write_en => Write_en,
-      oe       => OE,
+      we_cpu   => we_cpu,
+      we_dma   => we_dma,
+      oe_cpu   => OE_CPU,
+      oe_dma   => OE_DMA,
       address  => Address,
       databus  => Databus,
       Switches => Switches,
@@ -283,8 +289,8 @@ sinit <= not reset;
       TX_Data   => TX_Data,
       Address   => Address,
       Databus   => Databus,
-      Write_en  => Write_en,
-      OE        => OE,
+      Write_en  => WE_DMA,
+      OE_DMA    => OE_DMA,
       DMA_RQ    => DMA_RQ,
       READY     => READY);
       
@@ -298,9 +304,9 @@ sinit <= not reset;
       FlagZ       => FlagZ,
       FlagC       => FlagC,
       FlagN       => FlagN,
-      ACC_sal     => ACC_sal,
-      B_sal       => B_sal,
-      A_sal       => A_sal,
+--      ACC_sal     => ACC_sal,
+--      B_sal       => B_sal,
+--      A_sal       => A_sal,
       FlagE       => FlagE);
       
   ROM_inst : ROM
@@ -316,8 +322,8 @@ sinit <= not reset;
       ROM_Addr  => INS_addr,
       RAM_Addr  => Address,  
       RAM_CS    => OPEN, 
-      RAM_Write => Write_en, 
-      RAM_OE    => OE,    
+      RAM_Write => WE_CPU, 
+      RAM_OE    => OE_CPU,    
       Databus   => Databus,   
       DMA_RQ    => DMA_RQ,    
       DMA_ACK   => DMA_ACK,   
@@ -327,7 +333,7 @@ sinit <= not reset;
       Index_Reg => Index_Reg, 
       FlagZ     => FlagZ,     
       FlagC     => FlagC,
-      CuentInst => CuentInst,     
+--      CuentInst => CuentInst,     
       FlagN     => FlagN,     
       FlagE     => FlagE);       
   

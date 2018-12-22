@@ -34,9 +34,9 @@ entity ALU is
            FlagN       : out std_logic; -- Nibble carry bit
            FlagE       : out std_logic; -- Error flag
            Index_Reg   : out std_logic_vector(7 downto 0);   -- Index register
-           A_sal       : out std_logic_vector(7 downto 0);
-           B_sal       : out std_logic_vector(7 downto 0);
-           ACC_sal         : out std_logic_vector(7 downto 0);
+--           A_sal       : out std_logic_vector(7 downto 0);
+--           B_sal       : out std_logic_vector(7 downto 0);
+--           ACC_sal         : out std_logic_vector(7 downto 0);
            Databus     : inout std_logic_vector(7 downto 0)); -- System Data bus
 end ALU;
 
@@ -46,9 +46,9 @@ architecture Behavioral of ALU is
       
 begin
 
-A_sal <= std_logic_vector(A);
-B_sal <= std_logic_vector(B);
-ACC_sal <= std_logic_vector(ACC);
+--A_sal <= std_logic_vector(A);
+--B_sal <= std_logic_vector(B);
+--ACC_sal <= std_logic_vector(ACC);
 
 
 Index_reg <= std_logic_vector(Index);
@@ -72,7 +72,7 @@ ALU_Process: process(clk, reset, command_alu, databus, A, ACC)
         elsif (clk'event and clk = '1') then
             case (Command_alu) is
                 when nop =>      
-                    FlagZ <= '0'; -- If not it was not resetting.
+                    -- FlagZ <= '0'; -- If not it was not resetting.
                     FlagC <= '0';
                     FlagN <= '0';
                     FlagE <= '0';
@@ -180,20 +180,20 @@ ALU_Process: process(clk, reset, command_alu, databus, A, ACC)
                     end if;  
                     
                 when op_ascii2bin =>
-                    if (to_unsigned(48, 8) < A) and (A < to_unsigned(57, 8)) then
+--                    if (to_unsigned(30, 8) <= A) and (A <= to_unsigned(39, 8)) then
                         ACC <= A - to_unsigned(48, 8);
                         FlagE <= '0';
-                    else
-                        FlagE <= '1';
-                    end if;
+--                    else
+--                        FlagE <= '1';
+--                    end if;
                     
                 when op_bin2ascii =>
-                    if (to_unsigned(0, 8) < A) and (A < to_unsigned(9, 8)) then
+--                    if (to_unsigned(0, 8) <= A) and (A <= to_unsigned(9, 8)) then
                         ACC <= A + to_unsigned(48, 8);                             
                         FlagE <= '0';                                            
-                    else                                                         
-                        FlagE <= '1';                                            
-                    end if;  
+--                    else                                                         
+--                        FlagE <= '1';                                            
+--                    end if;  
                     
                 when op_oeacc =>
                     Databus <= std_logic_vector(ACC);

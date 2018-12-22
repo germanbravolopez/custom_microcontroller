@@ -8,8 +8,10 @@ USE work.PIC_pkg.all;
 ENTITY RAM IS
     PORT ( Clk      : in    std_logic;
            Reset    : in    std_logic;
-           write_en : in    std_logic;
-           oe       : in    std_logic;
+           we_cpu   : in    std_logic;
+           we_dma   : in    std_logic;
+           oe_cpu   : in    std_logic;
+           oe_dma   : in    std_logic;
            address  : in    std_logic_vector(7 downto 0);
            databus  : inout std_logic_vector(7 downto 0);
            Switches : out   std_logic_vector(7 downto 0);
@@ -37,7 +39,7 @@ p_chipset: process (Reset, address)
         end if;
     end process;
 
-p_escritura: process (clk, reset, chipset, databus) 
+p_escritura: process (clk, reset, chipset, databus, we_cpu, we_dma) 
     begin
         if (Reset = '0') then
             for I in 0 to 63 loop
@@ -45,7 +47,7 @@ p_escritura: process (clk, reset, chipset, databus)
             end loop;
             ram_specific(49) <= "00100000"; -- La posicion 49 decimal es la x"31" (en hex). 20 grados
         elsif (clk'event and clk = '1') then
-            if (write_en = '1') then
+            if (we_cpu = '1' or we_dma = '1') then
                 if (chipset = '0') then
                     ram_specific(to_integer(unsigned(address))) <= databus;
                 elsif (chipset = '1') then     
@@ -55,12 +57,12 @@ p_escritura: process (clk, reset, chipset, databus)
         end if;
     end process;
 
-p_lectura: process (clk, reset, address, chipset, oe) -- la memoria tiene que ser síncrona 
-    begin                                       -- para que Xilinx lo sintetice en los bloques reservados
+p_lectura: process (clk, reset, address, chipset, oe_cpu, oe_dma) -- la memoria tiene que ser síncrona 
+    begin                                    -- para que Xilinx lo sintetice en los bloques reservados
         if (reset = '0') then
             databus <= (others => 'Z');
         elsif (clk'event and clk = '1') then
-            if (oe = '0') then
+            if (oe_cpu = '0' or oe_dma = '0') then
                 if (chipset = '0') then
                     databus <= ram_specific(to_integer(unsigned(address)));
                 elsif (chipset = '1') then
@@ -79,42 +81,33 @@ p_lectura: process (clk, reset, address, chipset, oe) -- la memoria tiene que se
 -------------------------------------------------------------------------
 with ram_specific(49)(7 downto 4) select
 Temp_H <=
-    "0111111" when "0000",  -- 0
-    "0000110" when "0001",  -- 1
-    "1011011" when "0010",  -- 2
---    "1001111" when "0011",  -- 3
---    "1100110" when "0100",  -- 4
---    "1101101" when "0101",  -- 5
---    "1111101" when "0110",  -- 6
---    "0000111" when "0111",  -- 7
---    "1111111" when "1000",  -- 8
---    "1101111" when "1001",  -- 9
---    "1110111" when "1010",  -- A
---    "1111100" when "1011",  -- B
---    "0111001" when "1100",  -- C
---    "1011110" when "1101",  -- D
-    "1111001" when others;  -- E de que hay error  
---    "1110001" when "1111",  -- F
+    "1000000" when "0000",  -- 0
+    "1111001" when "0001",  -- 1
+    "0100100" when "0010",  -- 2
+    "0110000" when "0011",  -- 3
+    "0011001" when "0100",  -- 4
+    "0010010" when "0101",  -- 5
+    "0000010" when "0110",  -- 6
+    "1111000" when "0111",  -- 7
+    "0000000" when "1000",  -- 8
+    "0010000" when "1001",  -- 9
+    "0000110" when others;  -- E de que hay error  
 
     
 with ram_specific(49)(3 downto 0) select
     Temp_L <=
-        "0111111" when "0000",  -- 0
-        "0000110" when "0001",  -- 1
-        "1011011" when "0010",  -- 2
-        "1001111" when "0011",  -- 3
-        "1100110" when "0100",  -- 4
-        "1101101" when "0101",  -- 5
-        "1111101" when "0110",  -- 6
-        "0000111" when "0111",  -- 7
-        "1111111" when "1000",  -- 8
-        "1101111" when "1001",  -- 9
---        "1110111" when "1010",  -- A
---        "1111100" when "1011",  -- B
---        "0111001" when "1100",  -- C
---        "1011110" when "1101",  -- D
-        "1111001" when others;  -- E
---        "1110001" when "1111",  -- F
+        "1000000" when "0000",  -- 0
+        "1111001" when "0001",  -- 1
+        "0100100" when "0010",  -- 2
+        "0110000" when "0011",  -- 3
+        "0011001" when "0100",  -- 4
+        "0010010" when "0101",  -- 5
+        "0000010" when "0110",  -- 6
+        "1111000" when "0111",  -- 7
+        "0000000" when "1000",  -- 8
+        "0010000" when "1001",  -- 9
+        "0000110" when others;  -- E
+
 
 -----------------------------------------------------------------------
 
