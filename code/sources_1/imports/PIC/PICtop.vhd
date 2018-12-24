@@ -17,7 +17,8 @@ entity PICtop is
 --        A_sal       : out std_logic_vector(7 downto 0);
 --                   B_sal       : out std_logic_vector(7 downto 0);
 --                   ACC_sal         : out std_logic_vector(7 downto 0);
---                   Databus_s : out std_logic_vector(7 downto 0);
+--                   RAM_Add     : out std_logic_vector(7 downto 0);
+--                   chipset_sal: out std_logic;
         Disp      : out std_logic_vector(7 downto 0));  -- Display activation for T_STAT
 end PICtop;
 
@@ -67,7 +68,11 @@ architecture behavior of PICtop is
       we_cpu   : in    std_logic;
       oe_cpu   : in    std_logic;
       oe_dma   : in    std_logic;
+      ram_specific_sal: out array8_ram(0 to 63);
+      ram_generic_sal : out array8_ram(64 to 255);
       address  : in    std_logic_vector(7 downto 0);
+--      RAM_Add  : out std_logic_vector (7 downto 0);
+--      chipset_sal : out std_logic;
       databus  : inout std_logic_vector(7 downto 0);
       Switches : out   std_logic_vector(7 downto 0);
       Temp_L   : out   std_logic_vector(6 downto 0);
@@ -141,7 +146,7 @@ architecture behavior of PICtop is
       ROM_Data  : in STD_LOGIC_VECTOR (11 downto 0);
       ROM_Addr  : out STD_LOGIC_VECTOR (11 downto 0);
       RAM_Addr  : out STD_LOGIC_VECTOR (7 downto 0);
-      RAM_CS    : out STD_LOGIC;
+--      RAM_CS    : out STD_LOGIC;
       RAM_Write : out STD_LOGIC;
       RAM_OE    : out STD_LOGIC;
       Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
@@ -207,24 +212,24 @@ architecture behavior of PICtop is
   signal INS_addr : std_logic_vector(11 downto 0);
   signal INS_bus  : std_logic_vector(11 downto 0);
   ------------------------------------------------------------------------
-  signal counter_disp : integer range 0 to 20000 := 0;
+  signal ram_specific_sal: array8_ram(0 to 63);
+  signal ram_generic_sal : array8_ram(64 to 255);
+  signal counter_disp : integer range 0 to 2000 := 0;
 
 begin  -- RTL
 
---Databus_s <= Databus;
-
-temp_display: process (reset, clk) -- cada 1 ms se muestra por cada display el valor de su temperatura
+temp_display: process (counter_disp, temp_l, temp_h, reset, clk) -- cada 1 ms se muestra por cada display el valor de su temperatura
     begin
         if (reset = '0') then
-            temp <= "00000000";
-            disp <= "11111100";
+            temp <= '1' & temp_l;
+            disp <= "11111110";
             counter_disp <= 0;
         elsif (clk'event and clk = '1') then
-            if (counter_disp = 10000) then
+            if (counter_disp = 1000) then
                 temp <= '1' & temp_h;
                 disp <= "11111101";
                 counter_disp <= counter_disp + 1;
-            elsif (counter_disp = 20000) then
+            elsif (counter_disp = 2000) then
                 temp <= '1' & temp_l;
                 disp <= "11111110";
                 counter_disp <= 0;
@@ -268,8 +273,12 @@ sinit <= not reset;
       oe_cpu   => OE_CPU,
       oe_dma   => OE_DMA,
       address  => Address,
+--      RAM_Add  => RAM_Add,
+--      chipset_sal => chipset_sal,
       databus  => Databus,
       Switches => Switches,
+      ram_specific_sal => ram_specific_sal,
+      ram_generic_sal => ram_generic_sal,
       Temp_L   => Temp_L,
       Temp_H   => Temp_H);
 
@@ -314,14 +323,16 @@ sinit <= not reset;
       Instruction     => INS_bus,
       Program_counter => INS_addr);
   
+
+  
   MAIN : MAIN_CONTROL
     port map (
       Reset     => Reset,     
       Clk       => Clk,       
       ROM_Data  => INS_bus,  
       ROM_Addr  => INS_addr,
-      RAM_Addr  => Address,  
-      RAM_CS    => OPEN, 
+      RAM_Addr  => Address, 
+--      RAM_CS    => OPEN, 
       RAM_Write => WE_CPU, 
       RAM_OE    => OE_CPU,    
       Databus   => Databus,   

@@ -48,11 +48,11 @@ end DMA;
 
 architecture Behavioral of DMA is
 
-    type State is (Idle, Inicio_tx, aviso_envio1, envio1, envio2, aviso_envio2, inicio_rx, espabiladr, recibir, the_end);--fin_rx
+    type State is (Idle, Inicio_tx, aviso_envio1, envio1, envio2, aviso_envio2, inicio_rx, espabiladr, recibir, the_end);
     
-    signal CurrentState, NextState       : State;
-    signal count_rx                      : unsigned(1 downto 0) := "00";
-    signal Next_clk                      : unsigned(1 downto 0) := "00";
+    signal CurrentState, NextState : State;
+    signal count_rx                : unsigned(1 downto 0) := "00";
+    signal Next_clk                : unsigned(1 downto 0) := "00";
     
 begin
 
@@ -121,7 +121,7 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                 end if;
             when recibir =>
                 if(count_rx < "10") then
-                    NextState <= idle;--fin_rx
+                    NextState <= idle;
                 elsif (count_rx = "10") then
                     nextstate <= the_end;
                 else
@@ -129,7 +129,7 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
                 end if;
             when the_end =>
                 if (count_rx = "00") then
-                    NextState <= idle;--fin_rx
+                    NextState <= idle;
                 else
                     NextState <= the_end;
                 end if;
@@ -139,6 +139,7 @@ Next_process: process (CurrentState, RX_Empty, send_comm, tx_rdy, dma_ack, count
 Outputs: process (CurrentState, databus, count_rx, rcvd_data) 
     begin
     Databus <= (others => 'Z');
+    Address <= (others => 'Z');
         case CurrentState is
             when Idle =>
                 --RX
@@ -186,7 +187,6 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 DMA_RQ <= '0';
                 READY  <= '0';
                 Address <= dma_tx_buffer_msb;
-                --Databus <= (others => 'Z');
 
             when envio1 =>
                 --RX
@@ -202,7 +202,6 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 DMA_RQ <= '0';
                 READY  <= '0';
                 Address <= dma_tx_buffer_msb;
-                --Databus <= (others => 'Z');
                             
             when aviso_envio2 =>
                 --RX
@@ -218,7 +217,6 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 DMA_RQ <= '0';
                 READY  <= '0';
                 Address <= dma_tx_buffer_lsb;
-                --Databus <= (others => 'Z');
                                            
             when envio2 =>
                 --RX
@@ -234,7 +232,6 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 DMA_RQ <= '0';
                 READY  <= '0';
                 Address <= dma_tx_buffer_lsb;
-                --Databus <= (others => 'Z');
                             
             when Inicio_rx =>
                 --RX
@@ -266,8 +263,8 @@ Outputs: process (CurrentState, databus, count_rx, rcvd_data)
                 DMA_RQ <= '1';
                 READY  <= '0';
                 Address <= (others => 'Z');
-                Databus <= (others => 'Z');---------- mirar juancho
-
+                Databus <= (others => 'Z');
+                
             when recibir =>
                 --RX
                 Data_Read <= '0';

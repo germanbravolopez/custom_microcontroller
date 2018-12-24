@@ -12,6 +12,8 @@ ENTITY RAM IS
            we_dma   : in    std_logic;
            oe_cpu   : in    std_logic;
            oe_dma   : in    std_logic;
+           ram_specific_sal: out array8_ram(0 to 63);
+           ram_generic_sal : out array8_ram(64 to 255);
            address  : in    std_logic_vector(7 downto 0);
            databus  : inout std_logic_vector(7 downto 0);
            Switches : out   std_logic_vector(7 downto 0);
@@ -27,15 +29,19 @@ ARCHITECTURE behavior OF RAM IS
   
 BEGIN
 
+ram_generic_sal <= ram_generic;
+ram_specific_sal <= ram_specific;
+
 -- chipset = 1 para la segunda memoria.
+
 p_chipset: process (Reset, address)
     begin
         if (Reset = '0') then
             chipset <= '0';
-        elsif (address = ("ZZZZZZZZ")) then -- solo para que chipset no aparezca en forma de X 
-            chipset <= 'Z';
-        else
-            chipset <= address(7) or address(6); -- Address mayor que 00111111 3F 63dec.
+        elsif (address > "00111111") then
+            chipset <= '1'; -- Address mayor que 00111111 3F 63dec.
+        else 
+            chipset <= '0';
         end if;
     end process;
 

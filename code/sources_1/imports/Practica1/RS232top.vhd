@@ -37,18 +37,6 @@ architecture RTL of RS232top is
   end component;
 
   ------------------------------------------------------------------------
-  -- Components for Clock
-  ------------------------------------------------------------------------
-
---  component clk_converter
---    port (
---      clk_out1   : out    std_logic;
---      reset      : in     std_logic;
---      locked     : out    std_logic;
---      clk_in1    : in     std_logic);
---  end component;
-
-  ------------------------------------------------------------------------
   -- Components for Receiver Block
   ------------------------------------------------------------------------
 
@@ -108,13 +96,6 @@ begin  -- RTL
       Data  => Data_FF,
       EOT   => TX_RDY_i,
       TX    => TD);
-  
---  Clk_convert : clk_converter
---    port map ( 
---      clk_out1 => Clk,
---      reset => sinit, --tiene reset activo en alto
---      locked => OPEN,
---      clk_in1 => CLK100MHZ);
 
   Receiver: RS232_RX
     port map (

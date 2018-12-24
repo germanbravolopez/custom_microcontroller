@@ -31,7 +31,6 @@ entity MAIN_CONTROL is
            ROM_Data  : in STD_LOGIC_VECTOR (11 downto 0);
            ROM_Addr  : out STD_LOGIC_VECTOR (11 downto 0);
            RAM_Addr  : out STD_LOGIC_VECTOR (7 downto 0);
-           RAM_CS    : out STD_LOGIC;
            RAM_Write : out STD_LOGIC;
            RAM_OE    : out STD_LOGIC;
            Databus   : inout STD_LOGIC_VECTOR (7 downto 0);
@@ -45,7 +44,6 @@ entity MAIN_CONTROL is
            FlagC     : in STD_LOGIC;
            FlagN     : in STD_LOGIC;
            FlagE     : in STD_LOGIC
---           CuentInst : out std_logic_vector(11 downto 0)
            );
 end MAIN_CONTROL;
 
@@ -62,8 +60,6 @@ architecture Behavioral of MAIN_CONTROL is
 
 begin
 
--- To monitorize Cuenta Instruccion
---CuentInst <= std_logic_vector(cuenta_inst);
 
 ROM_Addr <= std_logic_vector(cuenta_inst);
 
@@ -90,7 +86,7 @@ INST_COUNTER: process(Reset, Clk, CurrentState, NextState, type_inst, instruccio
                         if (instruccion = JMP_UNCOND) then
                             cuenta_inst <= unsigned(registro_segunda); -- Salto incondicional
                         elsif (instruccion = JMP_COND) then
-                            if (flagZ = '1') then -- flag_salto antes
+                            if (flagZ = '1') then 
                                 cuenta_inst <= unsigned(registro_segunda);
                             else 
                                 cuenta_inst <= cuenta_inst + 1;
@@ -108,6 +104,8 @@ INST_COUNTER: process(Reset, Clk, CurrentState, NextState, type_inst, instruccio
 
 CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion, registro_segunda, Index_Reg, DMA_Ready) 
     begin
+        Databus <= (others => 'Z');
+        RAM_Addr <= (others => 'Z');
         case CurrentState is
         
             when Idle => ------------------------------------------------------------------
@@ -122,13 +120,6 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                 Databus <= (others => 'Z');
                 -- ALU
                 ALU_OP <= nop;
-                
-                -- Señales internas
---                if (flagZ = '1') then -- Hay que guardar el valor de flagZ de la inst ant
---                    flag_salto <= '1';
---                else
---                    flag_salto <= '0';
---                end if;
                 
                 -- NextState
                 if (DMA_RQ = '1') then
@@ -151,9 +142,7 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                 Databus <= (others => 'Z');
                 -- ALU
                 ALU_OP <= nop;
-                
-                -- Señales internas
-                
+                                
                 -- NextState
                 if (DMA_RQ = '0') then
                     NextState <= Idle;
@@ -197,15 +186,12 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                 Databus <= (others => 'Z');
                 -- ALU
                 ALU_OP <= nop;
-                
-                -- Señales internas
-                
+                                
                 -- Analizar las instrucciones + NextState
                 case type_inst is
                     when TYPE_1 =>
                         NextState <= Execute;
                     when TYPE_2 => 
---                            cuenta_inst <= cuenta_inst + 1; -- Suma uno para leer 2ª palabra
                         NextState <= Lectura_SP;
                     when TYPE_3 =>            
                         case instruccion (4 downto 0) is
@@ -216,7 +202,6 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                             when SRC_ACC & DST_INDX =>
                                 NextState <= Execute;
                             when others =>
---                                    cuenta_inst <= cuenta_inst + 1; -- Suma uno para leer 2ª palabra
                                 NextState <= Lectura_SP;
                         end case;
                     when TYPE_4 =>            
@@ -302,7 +287,6 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                                 alu_op <= nop;
                         end case;
                         
---                        cuenta_inst <= cuenta_inst + 1;
                         if (DMA_RQ = '1') then     
                             NextState <= Dar_buses;
                         else                       
@@ -311,21 +295,6 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                         
                     when TYPE_2 => 
                         alu_op <= nop;
-                        case instruccion is
-                            when JMP_UNCOND =>
---                                cuenta_inst <= unsigned(registro_segunda);
-                                null;
-                            when JMP_COND =>
---                                if (flag_salto = '1') then -- Según el flagZ de la instrucción ant
---                                    flag_salto <= '0';
---                                    cuenta_inst <= unsigned(registro_segunda);
---                                else
---                                    cuenta_inst <= cuenta_inst + 1;
-                                    null;
---                                end if;
-                            when others =>
-                                null;
-                        end case;
                         
                         if (DMA_RQ = '1') then     
                             NextState <= Dar_buses;
@@ -414,7 +383,6 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                                 null;
                         end case;       
                         
---                        cuenta_inst <= cuenta_inst + 1;
                         if (DMA_RQ = '1') then     
                             NextState <= Dar_buses;
                         else                       
@@ -444,12 +412,9 @@ CPU_proc: process (CurrentState, DMA_RQ, ROM_Data, flagZ, type_inst, instruccion
                 Databus <= (others => 'Z');
                 -- ALU
                 ALU_OP <= nop;
-                
-                -- Señales internas
-                
+                                
                 -- NextState
                 if(DMA_READY = '1') then
---                    cuenta_inst <= cuenta_inst + 1;
                     NextState <= Idle;
                 else
                     NextState <= Stall;
