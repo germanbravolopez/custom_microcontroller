@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 11.10.2018 17:48:00
 -- Design Name: 
--- Module Name: RAM_TB - Testbench
+-- Module Name: tb_RAM - Testbench
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 

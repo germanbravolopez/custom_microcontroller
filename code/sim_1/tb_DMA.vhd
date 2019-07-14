@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 14.10.2018 17:14:16
 -- Design Name: 
--- Module Name: DMA_tb - Behavioral
+-- Module Name: tb_DMA - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
