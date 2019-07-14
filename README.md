@@ -4,4 +4,5 @@ This project consists of the implementation of a microcontroller for an specific
 For the project it is used the [Nexys 4 DDR development board](https://reference.digilentinc.com/reference/programmable-logic/nexys-4-ddr/reference-manual) of Digilent®.
 
 ## System Architecture
+This image shows the architecture of the intern modules.
 ![alt text](https://github.com/germanbravolopez/Microcontroller/blob/master/assets/top_syst.png)
