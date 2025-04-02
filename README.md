@@ -11,4 +11,4 @@ The purpose of the system is to decode external commands that arrives through RS
 ## System Architecture
 The internal architecture of the processor is Harvard type, it has one memory for data (RAM memory) and another one for the program (ROM memory) with separated databuses. Data is managed with a DMA controller to store it in the RAM memory. There are some special registers which are shared between the CPU and the DMA, and the operations are done with the ALU.
 
-![alt text](https://github.com/germanbravolopez/Microcontroller/blob/master/assets/top_syst.png)
+![alt text](doc/custom_microcontroller_top.png)
