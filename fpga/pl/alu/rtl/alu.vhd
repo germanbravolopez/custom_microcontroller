@@ -17,17 +17,17 @@ entity alu is
 end alu;
 
 architecture behavioral of alu is
-    
-    signal a, b, acc, index : unsigned(7 downto 0);  
-      
+
+    signal a, b, acc, index : unsigned(7 downto 0);
+
 begin
 
 index_reg <= std_logic_vector(index);
 
-alu_process: process(clk, reset, command_alu, databus, a, acc) 
+alu_process: process(clk, reset, command_alu, databus, a, acc)
 
     variable acc_internal : unsigned (8 downto 0);
-    
+
     begin
         if(reset = '0') then
             flagz <= '0';
@@ -39,21 +39,21 @@ alu_process: process(clk, reset, command_alu, databus, a, acc)
             b <= (others => '0');
             acc <= (others => '0');
             index <= (others => '0');
-            
+
         elsif (clk'event and clk = '1') then
             case (command_alu) is
-                when nop =>      
+                when nop =>
                     flagc <= '0';
                     flagn <= '0';
                     flage <= '0';
                     databus <= (others => 'z');
-                when op_lda =>   
+                when op_lda =>
                     a <= unsigned(databus);
-                when op_ldb =>   
-                    b <= unsigned(databus);    
-                when op_ldacc => 
+                when op_ldb =>
+                    b <= unsigned(databus);
+                when op_ldacc =>
                     acc <= unsigned(databus);
-                when op_ldid =>  
+                when op_ldid =>
                     index <= unsigned(databus);
                 when op_mvacc2id =>
                     index <= acc;
@@ -64,39 +64,39 @@ alu_process: process(clk, reset, command_alu, databus, a, acc)
                 when op_add =>
                     acc_internal := ('0' & a) + ('0' & b);
                     acc <= acc_internal(7 downto 0);
-                    
+
                     if (acc_internal = "000000000") then
                         flagz <= '1';
                     else
                         flagz <= '0';
                     end if;
-                    
+
                     flagc <= acc_internal(8);
-                    
+
                     if (acc_internal > "000001111") then -- acc >= 16 : acarreo entre nibbles
                         flagn <= '1';
-                    else 
+                    else
                         flagn <= '0';
                     end if;
-                    
+
                 when op_sub =>
                     acc_internal := ('0' & a) - ('0' & b);
                     acc <= acc_internal(7 downto 0);
-                    
+
                     if (acc_internal = "000000000") then
                         flagz <= '1';
                     else
                         flagz <= '0';
                     end if;
-                    
+
                     flagc <= acc_internal(8);
-                    
-                    if (acc_internal > "000001111") then   
-                        flagn <= '1';                      
-                    else                                   
-                        flagn <= '0';                      
-                    end if;   
-                    
+
+                    if (acc_internal > "000001111") then
+                        flagn <= '1';
+                    else
+                        flagn <= '0';
+                    end if;
+
                 when op_shiftl =>
                     acc <= acc(6 downto 0) & '0';
                 when op_shiftr =>
@@ -109,7 +109,7 @@ alu_process: process(clk, reset, command_alu, databus, a, acc)
                     else
                         flagz <= '0';
                     end if;
-                    
+
                 when op_or =>
                     acc_internal := ('0' & a) or ('0' & b);
                     acc <= acc_internal(7 downto 0);
@@ -118,7 +118,7 @@ alu_process: process(clk, reset, command_alu, databus, a, acc)
                     else
                         flagz <= '0';
                     end if;
-                    
+
                 when op_xor =>
                     acc_internal := ('0' & a) xor ('0' & b);
                     acc <= acc_internal(7 downto 0);
@@ -127,40 +127,40 @@ alu_process: process(clk, reset, command_alu, databus, a, acc)
                     else
                         flagz <= '0';
                     end if;
-                    
-                when op_cmpe =>            
+
+                when op_cmpe =>
                     if (a = b) then
                         flagz <= '1';
-                    else       
+                    else
                         flagz <= '0';
                     end if;
-                    
-                when op_cmpg =>                  
-                    if (a > b) then  
+
+                when op_cmpg =>
+                    if (a > b) then
                         flagz <= '1';
-                    else             
+                    else
                         flagz <= '0';
-                    end if;  
-                    
-                when op_cmpl =>                  
-                    if (a < b) then  
+                    end if;
+
+                when op_cmpl =>
+                    if (a < b) then
                         flagz <= '1';
-                    else             
+                    else
                         flagz <= '0';
-                    end if;  
-                    
+                    end if;
+
                 when op_ascii2bin =>
                     acc <= a - to_unsigned(48, 8); -- se resta un 48 decimal que es un 30 en hexadecimal
                     flage <= '0';
-                    
+
                 when op_bin2ascii =>
-                    acc <= a + to_unsigned(48, 8);                             
-                    flage <= '0';                                            
-                    
+                    acc <= a + to_unsigned(48, 8);
+                    flage <= '0';
+
                 when op_oeacc =>
                     databus <= std_logic_vector(acc);
             end case;
         end if;
     end process;
-      
+
 end behavioral;

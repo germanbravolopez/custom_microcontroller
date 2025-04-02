@@ -29,7 +29,7 @@ end cpu;
 architecture behavioral of cpu is
 
     type state is (idle, dar_buses, fetch, decode, lectura_sp, execute, stall);
-    
+
     signal currentstate, nextstate       : state;
     signal type_inst                     : std_logic_vector (1 downto 0) := "00";
     signal cuenta_inst                   : unsigned(11 downto 0) := (others => '0');
@@ -42,7 +42,7 @@ begin
 
 rom_addr <= std_logic_vector(cuenta_inst);
 
-ffs: process (reset, clk, nextstate) 
+ffs: process (reset, clk, nextstate)
     begin
         if (reset = '0') then
             currentstate <= idle;
@@ -50,7 +50,7 @@ ffs: process (reset, clk, nextstate)
             currentstate <= nextstate;
         end if;
     end process;
-    
+
 inst_counter: process(reset, clk, currentstate, nextstate, type_inst, instruccion, flagz, registro_segunda)
     begin
         if (reset = '0') then
@@ -65,9 +65,9 @@ inst_counter: process(reset, clk, currentstate, nextstate, type_inst, instruccio
                         if (instruccion = jmp_uncond) then
                             cuenta_inst <= unsigned(registro_segunda); -- salto incondicional
                         elsif (instruccion = jmp_cond) then
-                            if (flagz = '1') then 
+                            if (flagz = '1') then
                                 cuenta_inst <= unsigned(registro_segunda);
-                            else 
+                            else
                                 cuenta_inst <= cuenta_inst + 1;
                             end if;
                         end if;
@@ -81,12 +81,12 @@ inst_counter: process(reset, clk, currentstate, nextstate, type_inst, instruccio
     end process;
 
 
-cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion, registro_segunda, index_reg, dma_ready) 
+cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion, registro_segunda, index_reg, dma_ready)
     begin
         databus <= (others => 'z');
         ram_addr <= (others => 'z');
         case currentstate is
-        
+
             when idle => ------------------------------------------------------------------
                 -- dma
                 dma_ack   <= '0';
@@ -99,7 +99,7 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                
+
                 -- nextstate
                 if (dma_rq = '1') then
                     nextstate <= dar_buses;
@@ -108,7 +108,7 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 else
                     nextstate <= idle;
                 end if;
-                
+
             when dar_buses => ------------------------------------------------------------------
                 -- dma
                 dma_ack   <= '1';
@@ -121,7 +121,7 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                                
+
                 -- nextstate
                 if (dma_rq = '0') then
                     nextstate <= idle;
@@ -141,18 +141,18 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                
+
                 -- se�ales internas
                 type_inst   <= rom_data(7 downto 6);
                 instruccion <= rom_data(5 downto 0);
-                
+
                 -- nextstate
                 if (dma_rq = '1') then
                     nextstate <= dar_buses;
                 else
                     nextstate <= decode;
                 end if;
-                
+
             when decode => ------------------------------------------------------------------
                 -- dma
                 dma_ack   <= '0';
@@ -165,14 +165,14 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                                
+
                 -- analizar las instrucciones + nextstate
                 case type_inst is
                     when type_1 =>
                         nextstate <= execute;
-                    when type_2 => 
+                    when type_2 =>
                         nextstate <= lectura_sp;
-                    when type_3 =>            
+                    when type_3 =>
                         case instruccion (4 downto 0) is
                             when src_acc & dst_a =>
                                 nextstate <= execute;
@@ -183,12 +183,12 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                             when others =>
                                 nextstate <= lectura_sp;
                         end case;
-                    when type_4 =>            
+                    when type_4 =>
                         nextstate <= execute;
                     when others =>
                         nextstate <= decode;
                 end case;
-                
+
             when lectura_sp => ------------------------------------------------------------------
                 -- dma
                 dma_ack   <= '0';
@@ -201,10 +201,10 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                
+
                 -- se�ales internas
                 registro_segunda <= rom_data;
-                
+
                 -- hay que cargar la ram con anterioridad
                 if (instruccion(5 downto 3) = (ld & src_mem)) then
                     ram_addr <= registro_segunda(7 downto 0);
@@ -219,10 +219,10 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                     ram_addr <= std_logic_vector(unsigned(registro_segunda(7 downto 0)) + unsigned(index_reg(7 downto 0)));
                     alu_op <= op_oeacc;
                 end if;
-                
+
                 -- nextstate
                 nextstate <= execute;
-                
+
             when execute => ------------------------------------------------------------------
                 -- dma
                 dma_ack   <= '0';
@@ -233,31 +233,31 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 ram_oe    <= '1';
                 -- databus
                 databus <= (others => 'z');
-                
+
                 -- alu: tareas a realizar seg�n la instrucci�n
                 case type_inst is
                     when type_1 =>
                         case instruccion is
                             when alu_add =>
                                 alu_op <= op_add;
-                            when alu_sub =>  
-                                alu_op <= op_sub;   
-                            when alu_shiftl => 
-                                alu_op <= op_shiftl; 
-                            when alu_shiftr =>  
+                            when alu_sub =>
+                                alu_op <= op_sub;
+                            when alu_shiftl =>
+                                alu_op <= op_shiftl;
+                            when alu_shiftr =>
                                 alu_op <= op_shiftr;
-                            when alu_and =>      
+                            when alu_and =>
                                 alu_op <= op_and;
                             when alu_or =>
-                                alu_op <= op_or;      
+                                alu_op <= op_or;
                             when alu_xor =>
-                                alu_op <= op_xor;     
+                                alu_op <= op_xor;
                             when alu_cmpe =>
-                                alu_op <= op_cmpe;    
+                                alu_op <= op_cmpe;
                             when alu_cmpg =>
-                                alu_op <= op_cmpg;   
+                                alu_op <= op_cmpg;
                             when alu_cmpl =>
-                                alu_op <= op_cmpl;    
+                                alu_op <= op_cmpl;
                             when alu_ascii2bin =>
                                 alu_op <= op_ascii2bin;
                             when alu_bin2ascii =>
@@ -265,29 +265,29 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                             when others =>
                                 alu_op <= nop;
                         end case;
-                        
-                        if (dma_rq = '1') then     
+
+                        if (dma_rq = '1') then
                             nextstate <= dar_buses;
-                        else                       
-                            nextstate <= idle;     
-                        end if;                    
-                        
-                    when type_2 => 
+                        else
+                            nextstate <= idle;
+                        end if;
+
+                    when type_2 =>
                         alu_op <= nop;
-                        
-                        if (dma_rq = '1') then     
+
+                        if (dma_rq = '1') then
                             nextstate <= dar_buses;
-                        else                       
-                            nextstate <= idle;     
-                        end if;                    
-                        
-                    when type_3 =>     
+                        else
+                            nextstate <= idle;
+                        end if;
+
+                    when type_3 =>
                         case instruccion(5) is
                             when ld =>
                                 case instruccion(4 downto 3) is
                                     when src_acc =>            -- movimiento entre registros
                                         case instruccion(2 downto 0) is
-                                            when dst_a =>    
+                                            when dst_a =>
                                                 alu_op <= op_mvacc2a;
                                             when dst_b =>
                                                 alu_op <= op_mvacc2b;
@@ -299,7 +299,7 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                                     when src_constant =>             -- cargar una constante
                                         databus <= registro_segunda(7 downto 0);
                                         case instruccion(2 downto 0) is
-                                            when dst_a =>    
+                                            when dst_a =>
                                                 alu_op <= op_lda;
                                             when dst_b =>
                                                 alu_op <= op_ldb;
@@ -314,14 +314,14 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                                         ram_addr <= registro_segunda(7 downto 0);
                                         ram_oe <= '0';
                                         case instruccion(2 downto 0) is
-                                            when dst_a =>         
-                                                alu_op <= op_lda;                               
-                                            when dst_b =>                        
-                                                alu_op <= op_ldb;                               
-                                            when dst_acc =>                      
-                                                alu_op <= op_ldacc;                             
-                                            when dst_indx =>                     
-                                                alu_op <= op_ldid;  
+                                            when dst_a =>
+                                                alu_op <= op_lda;
+                                            when dst_b =>
+                                                alu_op <= op_ldb;
+                                            when dst_acc =>
+                                                alu_op <= op_ldacc;
+                                            when dst_indx =>
+                                                alu_op <= op_ldid;
                                             when others =>
                                                 alu_op <= nop;
                                         end case;
@@ -329,14 +329,14 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                                         ram_addr <= std_logic_vector(unsigned(registro_segunda(7 downto 0)) + unsigned(index_reg(7 downto 0)));
                                         ram_oe <= '0';
                                         case instruccion(2 downto 0) is
-                                            when dst_a =>         
-                                                alu_op <= op_lda;                               
-                                            when dst_b =>                        
-                                                alu_op <= op_ldb;                               
-                                            when dst_acc =>                      
-                                                alu_op <= op_ldacc;                             
-                                            when dst_indx =>                     
-                                                alu_op <= op_ldid;    
+                                            when dst_a =>
+                                                alu_op <= op_lda;
+                                            when dst_b =>
+                                                alu_op <= op_ldb;
+                                            when dst_acc =>
+                                                alu_op <= op_ldacc;
+                                            when dst_indx =>
+                                                alu_op <= op_ldid;
                                             when others =>
                                                 alu_op <= nop;
                                         end case;
@@ -360,20 +360,20 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                                 end case;
                             when others =>
                                 null;
-                        end case;       
-                        
-                        if (dma_rq = '1') then     
+                        end case;
+
+                        if (dma_rq = '1') then
                             nextstate <= dar_buses;
-                        else                       
-                            nextstate <= idle;     
-                        end if;                    
-                        
-                    when type_4 =>            
+                        else
+                            nextstate <= idle;
+                        end if;
+
+                    when type_4 =>
                         alu_op <= nop;
                         send_comm <= '1';
-                        
+
                         nextstate <= stall;
-                    
+
                     when others =>
                         alu_op <= nop;
                         nextstate <= execute;
@@ -391,7 +391,7 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                 databus <= (others => 'z');
                 -- alu
                 alu_op <= nop;
-                                
+
                 -- nextstate
                 if(dma_ready = '1') then
                     nextstate <= idle;
@@ -399,6 +399,6 @@ cpu_proc: process (currentstate, dma_rq, rom_data, flagz, type_inst, instruccion
                     nextstate <= stall;
                 end if;
         end case;
-    end process;  
+    end process;
 
 end behavioral;

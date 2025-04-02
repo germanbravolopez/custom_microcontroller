@@ -14,7 +14,7 @@ end rs232_rx;
 architecture behavioral of rs232_rx is
 
     type state is (idle, startbit, rcvdata, stopbit);
-    
+
     signal currentstate, nextstate                  : state;
     signal flagdatacount, flagbitwidth, flaghalfbit : std_logic;
     signal bitwidth                                 : unsigned (7 downto 0);
@@ -54,7 +54,7 @@ next_process: process (currentstate, linerd_in, flagbitwidth, flagdatacount)
         end case;
     end process;
 
-ffs: process (reset, clk) 
+ffs: process (reset, clk)
     begin
         if (reset = '0') then
             currentstate <= idle;
@@ -62,8 +62,8 @@ ffs: process (reset, clk)
             currentstate <= nextstate;
         end if;
     end process;
-   
-outputs: process (currentstate, datacount, flaghalfbit, linerd_in) 
+
+outputs: process (currentstate, datacount, flaghalfbit, linerd_in)
     begin
         case currentstate is
             when idle =>
@@ -86,7 +86,7 @@ outputs: process (currentstate, datacount, flaghalfbit, linerd_in)
             when stopbit =>
                 valid_out <= '0';
                 code_out  <= '0';
-                if (flaghalfbit = '1' and linerd_in = '1') then 
+                if (flaghalfbit = '1' and linerd_in = '1') then
                     store_out <= '1';
                 else
                     store_out <= '0';
@@ -104,12 +104,12 @@ bitwidth_halfwidth_counter: process (clk, reset, currentstate, linerd_in)
         elsif (clk'event and clk = '1') then
             bitwidth <= bitwidth + to_unsigned(1,8);
             halfbitwidth <= halfbitwidth + to_unsigned(1,7);
-            if (bitwidth = pulseendofcount) then 
+            if (bitwidth = pulseendofcount) then
                 bitwidth <= (others => '0');
                 halfbitwidth <= (others => '0');
                 flagbitwidth <= '1';
                 flaghalfbit <= '0';
-            else 
+            else
                 flagbitwidth <= '0';
             end if;
             if (halfbitwidth = 87) then
@@ -119,14 +119,14 @@ bitwidth_halfwidth_counter: process (clk, reset, currentstate, linerd_in)
             end if;
         end if;
     end process;
- 
+
 datacounter: process (clk, reset, currentstate, flagbitwidth)
     begin
         if (reset = '0' or currentstate = startbit) then
             datacount <= (others => '0');
             flagdatacount <= '0';
         elsif (clk'event and clk='1') then
-            if (currentstate = rcvdata and (flagbitwidth = '1')) then  
+            if (currentstate = rcvdata and (flagbitwidth = '1')) then
                 datacount <= datacount + to_unsigned(1,3);
                 if (datacount = 7) then
                     datacount <= (others => '0');
@@ -137,5 +137,5 @@ datacounter: process (clk, reset, currentstate, flagbitwidth)
             end if;
         end if;
     end process;
-    
+
 end behavioral;

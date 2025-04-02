@@ -16,7 +16,7 @@ begin
 
 reg_proc: process (reset, clk)
     variable q_int  : unsigned(7 downto 0); -- las variables se actualizan inmediatamente
-    
+
     begin
         if (reset = '0') then
             q_int := (others => '0');

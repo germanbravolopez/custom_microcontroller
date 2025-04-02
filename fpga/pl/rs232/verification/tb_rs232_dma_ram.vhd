@@ -12,7 +12,7 @@ end tb_rs232_dma_ram;
 architecture testbench of tb_rs232_dma_ram is
 
   component rs232_dma_ram
-    port ( 
+    port (
       reset     : in  std_logic; -- asynchronous, active low
       clk       : in  std_logic; -- system clock, 20 mhz, rising_edge
       rs232_rx  : in  std_logic; -- rs232 rx line
@@ -30,33 +30,33 @@ architecture testbench of tb_rs232_dma_ram is
 -- internal signals
 -----------------------------------------------------------------------------
 
-  signal reset     : std_logic; 
-  signal clk       : std_logic; 
-  signal rs232_rx  : std_logic; 
-  signal rs232_tx  : std_logic; 
-  signal dma_rq    : std_logic; 
-  signal dma_ack   : std_logic; 
-  signal send_comm : std_logic; 
-  signal ready     : std_logic; 
-  signal switches  : std_logic_vector(7 downto 0);                        
-  signal temp_l    : std_logic_vector(6 downto 0);                        
-  signal temp_h    : std_logic_vector(6 downto 0);                       
-  
+  signal reset     : std_logic;
+  signal clk       : std_logic;
+  signal rs232_rx  : std_logic;
+  signal rs232_tx  : std_logic;
+  signal dma_rq    : std_logic;
+  signal dma_ack   : std_logic;
+  signal send_comm : std_logic;
+  signal ready     : std_logic;
+  signal switches  : std_logic_vector(7 downto 0);
+  signal temp_l    : std_logic_vector(6 downto 0);
+  signal temp_h    : std_logic_vector(6 downto 0);
+
 begin -- testbench
 
   uut: rs232_dma_ram
     port map (
-        reset     => reset,     
-        clk       => clk,       
-        rs232_rx  => rs232_rx,  
-        rs232_tx  => rs232_tx, 
-        dma_rq    => dma_rq,    
-        dma_ack   => dma_ack,   
-        send_comm => send_comm, 
-        ready     => ready,     
-        switches  => switches,  
-        temp_l    => temp_l,    
-        temp_h    => temp_h);    
+        reset     => reset,
+        clk       => clk,
+        rs232_rx  => rs232_rx,
+        rs232_tx  => rs232_tx,
+        dma_rq    => dma_rq,
+        dma_ack   => dma_ack,
+        send_comm => send_comm,
+        ready     => ready,
+        switches  => switches,
+        temp_l    => temp_l,
+        temp_h    => temp_h);
 
 -----------------------------------------------------------------------------
 -- reset & clock generator
@@ -73,17 +73,17 @@ p_clk : process
 test_main : process
     begin
         send_comm <= '0', '1' after 520us, '0' after 520.5us;
-        dma_ack <= '0', '1' after 124.0us, '0' after 124.050us, 
+        dma_ack <= '0', '1' after 124.0us, '0' after 124.050us,
                         '1' after 250.5us, '0' after 250.550us,
                         '1' after 377.5us, '0' after 377.550us;
         wait;
     end process;
-    
+
 test_rx : process
     begin
         rs232_rx <= '1';
         wait for 40 us;
-        transmit(rs232_rx, x"49"); 
+        transmit(rs232_rx, x"49");
         wait for 40 us;
         transmit(rs232_rx, x"34");
         wait for 40 us;
@@ -92,5 +92,5 @@ test_rx : process
 --        transmit(rs232_rx, x"25");
         wait;
     end process;
-        
+
 end testbench;

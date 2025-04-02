@@ -64,7 +64,7 @@ set_property -dict { PACKAGE_PIN K13   IOSTANDARD LVCMOS33 } [get_ports { Temp[3
 set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { Temp[4] }]; #IO_L13P_T2_MRCC_14 Sch=ce
 set_property -dict { PACKAGE_PIN T11   IOSTANDARD LVCMOS33 } [get_ports { Temp[5] }]; #IO_L19P_T3_A10_D26_14 Sch=cf
 set_property -dict { PACKAGE_PIN L18   IOSTANDARD LVCMOS33 } [get_ports { Temp[6] }]; #IO_L4P_T0_D04_14 Sch=cg
-## el punto 
+## el punto
 set_property -dict { PACKAGE_PIN H15   IOSTANDARD LVCMOS33 } [get_ports { Temp[7] }]; #IO_L19N_T3_A21_VREF_15 Sch=dp
 
 set_property -dict { PACKAGE_PIN J17   IOSTANDARD LVCMOS33 } [get_ports { Disp[0] }]; #IO_L23P_T3_FOE_B_15 Sch=an[0]

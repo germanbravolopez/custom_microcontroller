@@ -17,7 +17,7 @@ architecture testbench of tb_pic_top is
       rs232_rx  : in  std_logic;
       rs232_tx  : out std_logic;
       switches  : out std_logic_vector(7 downto 0);
-      temp      : out std_logic_vector(7 downto 0); 
+      temp      : out std_logic_vector(7 downto 0);
       disp      : out std_logic_vector(7 downto 0)
       );
   end component;
@@ -70,20 +70,20 @@ begin  -- testbench
 --     transmit(rs232_rx, x"41"); -- activar un actuador
      transmit(rs232_rx, x"54"); -- cambiar temperatura
 --     transmit(rs232_rx, x"53"); -- solicitar info
-     
+
      wait for 40 us;
 --     transmit(rs232_rx, x"34");
 --     transmit(rs232_rx, x"35");
      transmit(rs232_rx, x"31");
 --     transmit(rs232_rx, x"54");
-     
+
      wait for 40 us;
 --     transmit(rs232_rx, x"31");
 --     transmit(rs232_rx, x"36");
      transmit(rs232_rx, x"38");
 --     transmit(rs232_rx, x"37");
-     
+
      wait;
   end process send_stuff;
-   
+
 end testbench;

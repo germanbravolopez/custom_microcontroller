@@ -54,7 +54,7 @@ architecture behavior of pic_top is
       full      : out std_logic;
       empty     : out std_logic);
   end component;
-  
+
   ------------------------------------------------------------------------
   -- ram component
   ------------------------------------------------------------------------
@@ -83,7 +83,7 @@ architecture behavior of pic_top is
   ------------------------------------------------------------------------
 
   component dma
-    port ( 
+    port (
       reset     : in std_logic;
       clk       : in std_logic;
       rcvd_data : in std_logic_vector (7 downto 0);
@@ -103,13 +103,13 @@ architecture behavior of pic_top is
       dma_rq    : out std_logic;
       ready     : out std_logic);
   end component;
-  
+
   ------------------------------------------------------------------------
   -- alu component
   ------------------------------------------------------------------------
-  
+
   component alu
-    port ( 
+    port (
       reset       : in std_logic;
       clk         : in std_logic;
       command_alu : in alu_op;
@@ -123,7 +123,7 @@ architecture behavior of pic_top is
 --      acc_sal     : out std_logic_vector(7 downto 0);
       flage       : out std_logic);
   end component;
-  
+
   ------------------------------------------------------------------------
   -- rom component
   ------------------------------------------------------------------------
@@ -137,9 +137,9 @@ architecture behavior of pic_top is
   ------------------------------------------------------------------------
   -- cpu component
   ------------------------------------------------------------------------
-  
+
   component cpu
-    port ( 
+    port (
       reset     : in std_logic;
       clk       : in std_logic;
       rom_data  : in std_logic_vector (11 downto 0);
@@ -161,44 +161,44 @@ architecture behavior of pic_top is
       flagn     : in std_logic;
       flage     : in std_logic);
   end component;
-  
+
   ------------------------------------------------------------------------
   -- internal signals
   ------------------------------------------------------------------------
   -- common signals
   signal clk       : std_logic;
-  signal sinit     : std_logic; 
+  signal sinit     : std_logic;
   signal databus   : std_logic_vector(7 downto 0);
   signal address   : std_logic_vector(7 downto 0);
-  
+
   -- tx
   signal tx_data   : std_logic_vector(7 downto 0);
-  signal valid_d   : std_logic; 
+  signal valid_d   : std_logic;
   signal ack_out   : std_logic;
   signal tx_rdy    : std_logic;
-  
+
   -- rx
   signal rcvd_data : std_logic_vector(7 downto 0);
   signal rx_full   : std_logic;
   signal rx_empty  : std_logic;
   signal data_read : std_logic;
-  
+
   -- dma-ram
   signal oe_dma    : std_logic;
   signal oe_cpu    : std_logic;
   signal we_dma    : std_logic;
   signal we_cpu    : std_logic;
-  
+
   -- dma-
   signal send_comm   : std_logic;
   signal dma_ack   : std_logic;
   signal ready   : std_logic;
   signal dma_rq   : std_logic;
-  
+
   -- temp outputs
   signal temp_h    : std_logic_vector(6 downto 0);
   signal temp_l    : std_logic_vector(6 downto 0);
-  
+
   -- alu
   signal alu_op    : alu_op;
   signal index_reg : std_logic_vector (7 downto 0);
@@ -206,7 +206,7 @@ architecture behavior of pic_top is
   signal flagc     : std_logic;
   signal flagn     : std_logic;
   signal flage     : std_logic;
-  
+
   -- rom
   signal ins_addr : std_logic_vector(11 downto 0);
   signal ins_bus  : std_logic_vector(11 downto 0);
@@ -253,16 +253,16 @@ temp_display: process (counter_disp, temp_l, temp_h, reset, clk) -- cada 1 ms se
       data_read => data_read,
       full      => rx_full,
       empty     => rx_empty);
-        
+
 sinit <= not reset;
 
   clk_convert : clk_converter
-    port map ( 
+    port map (
       clk_out1 => clk,
       reset    => sinit, --tiene reset activo en alto
       locked   => open,
       clk_in1  => clk100mhz);
-      
+
   ram_inst : ram
     port map (
       clk      => clk,
@@ -284,7 +284,7 @@ sinit <= not reset;
   dma_inst : dma
     port map (
       reset     => reset,
-      clk       => clk, 
+      clk       => clk,
       rcvd_data => rcvd_data,
       rx_full   => rx_full,
       rx_empty  => rx_empty,
@@ -301,7 +301,7 @@ sinit <= not reset;
       oe_dma    => oe_dma,
       dma_rq    => dma_rq,
       ready     => ready);
-      
+
   alu_inst : alu
     port map (
       reset       => reset,
@@ -316,35 +316,35 @@ sinit <= not reset;
 --      b_sal       => b_sal,
 --      a_sal       => a_sal,
       flage       => flage);
-      
+
   rom_inst : rom
     port map (
       instruction     => ins_bus,
       program_counter => ins_addr);
-  
 
-  
+
+
   cpu_inst : cpu
     port map (
-      reset     => reset,     
-      clk       => clk,       
-      rom_data  => ins_bus,  
+      reset     => reset,
+      clk       => clk,
+      rom_data  => ins_bus,
       rom_addr  => ins_addr,
-      ram_addr  => address, 
---      ram_cs    => open, 
-      ram_write => we_cpu, 
-      ram_oe    => oe_cpu,    
-      databus   => databus,   
-      dma_rq    => dma_rq,    
-      dma_ack   => dma_ack,   
-      send_comm => send_comm, 
-      dma_ready => ready, 
-      alu_op    => alu_op,    
-      index_reg => index_reg, 
-      flagz     => flagz,     
+      ram_addr  => address,
+--      ram_cs    => open,
+      ram_write => we_cpu,
+      ram_oe    => oe_cpu,
+      databus   => databus,
+      dma_rq    => dma_rq,
+      dma_ack   => dma_ack,
+      send_comm => send_comm,
+      dma_ready => ready,
+      alu_op    => alu_op,
+      index_reg => index_reg,
+      flagz     => flagz,
       flagc     => flagc,
---      cuentinst => cuentinst,     
-      flagn     => flagn,     
-      flage     => flage);       
-  
+--      cuentinst => cuentinst,
+      flagn     => flagn,
+      flage     => flage);
+
 end behavior;

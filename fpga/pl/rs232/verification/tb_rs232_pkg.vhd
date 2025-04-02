@@ -15,13 +15,13 @@ end tb_rs232_pkg;
 package body tb_rs232_pkg is
 
 -----------------------------------------------------------------------------
--- procedure for sending one byte over the rs232 serial input 
------------------------------------------------------------------------------     
+-- procedure for sending one byte over the rs232 serial input
+-----------------------------------------------------------------------------
            procedure transmit (
              signal   tx   : out std_logic;  -- serial output
              constant data : in  std_logic_vector(7 downto 0)) is
            begin
-       
+
              tx <= '0';
              wait for 8680.6 ns;  -- about to send byte
 

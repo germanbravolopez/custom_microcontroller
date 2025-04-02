@@ -6,7 +6,7 @@ package pic_pkg is
 -------------------------------------------------------------------------------
 -- types for the ram memory
 -------------------------------------------------------------------------------
-  
+
   subtype item_array8_ram is std_logic_vector (7 downto 0);
   type array8_ram is array (integer range <>) of item_array8_ram;
 

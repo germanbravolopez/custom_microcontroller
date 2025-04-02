@@ -1,7 +1,7 @@
 library ieee;
    use ieee.std_logic_1164.all;
    use ieee.numeric_std.all;
-   
+
 entity rs232_top is
     port ( reset     : in  std_logic;   -- low_level-active asynchronous reset
            clk       : in  std_logic;   -- system clock (20mhz), rising edge used
@@ -20,7 +20,7 @@ entity rs232_top is
 end rs232_top;
 
 architecture rtl of rs232_top is
- 
+
   ------------------------------------------------------------------------
   -- components for transmitter block
   ------------------------------------------------------------------------
@@ -114,7 +114,7 @@ begin  -- rtl
       q      => fifo_in);
 
   sinit <= not reset;
-  
+
   internal_memory: fifo_generator_0
     port map (
       clk => clk,

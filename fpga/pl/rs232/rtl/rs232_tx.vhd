@@ -14,16 +14,16 @@ end rs232_tx;
 architecture behavioral of rs232_tx is
 
     type state is (idle, startbit, senddata, stopbit);
-    
+
     signal currentstate, nextstate     : state;
     signal flagbitwidth, flagdatacount : std_logic;
     signal bitwidth                    : unsigned (7 downto 0);
     signal datacount                   : unsigned(2 downto 0);
-    constant pulseendofcount           : integer := 174;  -- 173,611 ciclos por bit 
+    constant pulseendofcount           : integer := 174;  -- 173,611 ciclos por bit
 
 begin
 
-next_process: process (currentstate, start, flagbitwidth, flagdatacount, data) 
+next_process: process (currentstate, start, flagbitwidth, flagdatacount, data)
     begin
         case currentstate is
             when idle =>
@@ -53,7 +53,7 @@ next_process: process (currentstate, start, flagbitwidth, flagdatacount, data)
         end case;
     end process;
 
-ffs: process (reset, clk) 
+ffs: process (reset, clk)
     begin
         if (reset = '0') then
             currentstate <= idle;
@@ -62,7 +62,7 @@ ffs: process (reset, clk)
         end if;
     end process;
 
-outputs: process (currentstate, datacount, data, flagdatacount) 
+outputs: process (currentstate, datacount, data, flagdatacount)
     begin
         case currentstate is
             when idle =>
@@ -83,7 +83,7 @@ outputs: process (currentstate, datacount, data, flagdatacount)
         end case;
     end process;
 
-bitwidth_counter: process (clk, reset, currentstate) 
+bitwidth_counter: process (clk, reset, currentstate)
     begin
         if (reset = '0' or currentstate = idle) then
             bitwidth <= (others => '0');
@@ -93,12 +93,12 @@ bitwidth_counter: process (clk, reset, currentstate)
             if (bitwidth = pulseendofcount) then
                 bitwidth <= (others => '0');
                 flagbitwidth <= '1';
-            else 
+            else
                 flagbitwidth <= '0';
             end if;
         end if;
     end process;
-        
+
 datacounter: process (clk, reset, currentstate, flagbitwidth)
     begin
         if (reset = '0' or currentstate = startbit) then
@@ -111,7 +111,7 @@ datacounter: process (clk, reset, currentstate, flagbitwidth)
                     datacount <= (others => '0');
                     flagdatacount <= '1';
                 else
-                    flagdatacount <= '0'; 
+                    flagdatacount <= '0';
                 end if;
             end if;
         end if;

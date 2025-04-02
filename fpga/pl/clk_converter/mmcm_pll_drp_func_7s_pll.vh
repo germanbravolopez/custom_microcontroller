@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//    
+//
 //    Company:          Xilinx
 //    Engineer:         Jim Tatsukawa, Karl Kurbjun and Carl Ribbing
 //    Date:             7/30/2014
@@ -8,10 +8,10 @@
 //    Version:          2.00
 //    Target Devices:   7 Series || PLL
 //    Tool versions:    2014.3
-//    Description:      This header provides the functions necessary to  
+//    Description:      This header provides the functions necessary to
 //                      calculate the DRP register values for the V6 PLL.
 //                      Updated for CR663854.
-// 
+//
 //    Disclaimer:  XILINX IS PROVIDING THIS DESIGN, CODE, OR
 //                 INFORMATION "AS IS" SOLELY FOR USE IN DEVELOPING
 //                 PROGRAMS AND SOLUTIONS FOR XILINX DEVICES.  BY
@@ -29,10 +29,10 @@
 //                 FROM CLAIMS OF INFRINGEMENT, IMPLIED WARRANTIES
 //                 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 //                 PURPOSE.
-// 
+//
 //                 (c) Copyright 2009-2010 Xilinx, Inc.
 //                 All rights reserved.
-// 
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 // These are user functions that should not be modified.  Changes to the defines
@@ -42,29 +42,29 @@
 //`define DEBUG 1
 
 // FRAC_PRECISION describes the width of the fractional portion of the fixed
-//    point numbers.  These should not be modified, they are for development 
+//    point numbers.  These should not be modified, they are for development
 //    only
 `define FRAC_PRECISION  10
 // FIXED_WIDTH describes the total size for fixed point calculations(int+frac).
-// Warning: L.50 and below will not calculate properly with FIXED_WIDTHs 
+// Warning: L.50 and below will not calculate properly with FIXED_WIDTHs
 //    greater than 32
-`define FIXED_WIDTH     32 
+`define FIXED_WIDTH     32
 
 // This function takes a fixed point number and rounds it to the nearest
 //    fractional precision bit.
 function [`FIXED_WIDTH:1] round_frac
    (
       // Input is (FIXED_WIDTH-FRAC_PRECISION).FRAC_PRECISION fixed point number
-      input [`FIXED_WIDTH:1] decimal,  
+      input [`FIXED_WIDTH:1] decimal,
 
       // This describes the precision of the fraction, for example a value
       //    of 1 would modify the fractional so that instead of being a .16
       //    fractional, it would be a .1 (rounded to the nearest 0.5 in turn)
-      input [`FIXED_WIDTH:1] precision 
+      input [`FIXED_WIDTH:1] precision
    );
 
    begin
-   
+
 `ifdef DEBUG
       $display("round_frac - decimal: %h, precision: %h", decimal, precision);
 `endif
@@ -83,8 +83,8 @@ endfunction
 // This function calculates high_time, low_time, w_edge, and no_count
 //    of a non-fractional counter based on the divide and duty cycle
 //
-// NOTE: high_time and low_time are returned as integers between 0 and 63 
-//    inclusive.  64 should equal 6'b000000 (in other words it is okay to 
+// NOTE: high_time and low_time are returned as integers between 0 and 63
+//    inclusive.  64 should equal 6'b000000 (in other words it is okay to
 //    ignore the overflow)
 function [13:0] mmcm_pll_divider
    (
@@ -93,7 +93,7 @@ function [13:0] mmcm_pll_divider
    );
 
    reg [`FIXED_WIDTH:1]    duty_cycle_fix;
-   
+
    // High/Low time is initially calculated with a wider integer to prevent a
    // calculation error when it overflows to 64.
    reg [6:0]               high_time;
@@ -112,7 +112,7 @@ function [13:0] mmcm_pll_divider
 
       // Convert to FIXED_WIDTH-FRAC_PRECISION.FRAC_PRECISION fixed point
       duty_cycle_fix = (duty_cycle << `FRAC_PRECISION) / 100_000;
-      
+
 `ifdef DEBUG
       $display("duty_cycle_fix: %h", duty_cycle_fix);
 `endif
@@ -128,11 +128,11 @@ function [13:0] mmcm_pll_divider
          temp = round_frac(duty_cycle_fix*divide, 1);
 
          // comes from above round_frac
-         high_time   = temp[`FRAC_PRECISION+7:`FRAC_PRECISION+1]; 
+         high_time   = temp[`FRAC_PRECISION+7:`FRAC_PRECISION+1];
          // If the duty cycle * divide rounded is .5 or greater then this bit
          //    is set.
          w_edge      = temp[`FRAC_PRECISION]; // comes from round_frac
-         
+
          // If the high time comes out to 0, it needs to be set to at least 1
          // and w_edge set to 0
          if(high_time == 7'h00) begin
@@ -144,10 +144,10 @@ function [13:0] mmcm_pll_divider
             high_time   = divide - 1;
             w_edge      = 1'b1;
          end
-         
+
          // Calculate low_time based on the divide setting and set no_count to
          //    0 as it is only used when divide is 1.
-         low_time    = divide - high_time; 
+         low_time    = divide - high_time;
          no_count    = 1'b0;
       end
 
@@ -156,7 +156,7 @@ function [13:0] mmcm_pll_divider
    end
 endfunction
 
-// This function calculates mx, delay_time, and phase_mux 
+// This function calculates mx, delay_time, and phase_mux
 //  of a non-fractional counter based on the divide and phase
 //
 // NOTE: The only valid value for the MX bits is 2'b00 to ensure the coarse mux
@@ -184,7 +184,7 @@ function [10:0] mmcm_pll_phase
       $display("mmcm_pll_phase-divide:%d,phase:%d",
          divide, phase);
 `endif
-   
+
       if ((phase < -360000) || (phase > 360000)) begin
          $display("ERROR: phase of $phase is not between -360000 and 360000");
          $finish;
@@ -203,16 +203,16 @@ function [10:0] mmcm_pll_phase
 
 `ifdef DEBUG
       $display("phase_in_cycles: %h", phase_in_cycles);
-`endif  
-      
+`endif
+
 
 	 temp  =  round_frac(phase_in_cycles, 3);
 
 	 // set mx to 2'b00 that the phase mux from the VCO is enabled
-	 mx    			=  2'b00; 
+	 mx    			=  2'b00;
 	 phase_mux      =  temp[`FRAC_PRECISION:`FRAC_PRECISION-2];
 	 delay_time     =  temp[`FRAC_PRECISION+6:`FRAC_PRECISION+1];
-      
+
 `ifdef DEBUG
       $display("temp: %h", temp);
 `endif
@@ -227,9 +227,9 @@ function [39:0] mmcm_pll_lock_lookup
    (
       input [6:0] divide // Max divide is 64
    );
-   
+
    reg [2559:0]   lookup;
-   
+
    begin
       lookup = {
          // This table is composed of:
@@ -299,7 +299,7 @@ function [39:0] mmcm_pll_lock_lookup
          40'b11111_11111_0011111010_1111101001_0000000001,
          40'b11111_11111_0011111010_1111101001_0000000001
       };
-      
+
       // Set lookup_entry with the explicit bits from lookup with a part select
       mmcm_pll_lock_lookup = lookup[ ((64-divide)*40) +: 40];
    `ifdef DEBUG
@@ -315,12 +315,12 @@ function [9:0] mmcm_pll_filter_lookup
       input [6:0] divide, // Max divide is 64
       input [8*9:0] BANDWIDTH
    );
-   
+
    reg [639:0] lookup_low;
    reg [639:0] lookup_high;
-   
+
    reg [9:0] lookup_entry;
-   
+
    begin
       lookup_low = {
          // CP_RES_LFHF
@@ -389,7 +389,7 @@ function [9:0] mmcm_pll_filter_lookup
          10'b0010_0100_00,
          10'b0010_0100_00
       };
-      
+
       lookup_high = {
          // CP_RES_LFHF
          10'b0011_0111_00,
@@ -457,7 +457,7 @@ function [9:0] mmcm_pll_filter_lookup
          10'b0010_0100_00,
          10'b0010_0100_00
       };
-      
+
       // Set lookup_entry with the explicit bits from lookup with a part select
       if(BANDWIDTH == "LOW") begin
          // Low Bandwidth
@@ -466,7 +466,7 @@ function [9:0] mmcm_pll_filter_lookup
          // High or optimized bandwidth
          mmcm_pll_filter_lookup = lookup_high[ ((64-divide)*10) +: 10];
       end
-      
+
    `ifdef DEBUG
       $display("filter_lookup: %b", mmcm_pll_filter_lookup);
    `endif
@@ -481,16 +481,16 @@ function [37:0] mmcm_pll_count_calc
       input signed [31:0] phase,
       input [31:0] duty_cycle // Multiplied by 100,000
    );
-   
+
    reg [13:0] div_calc;
    reg [16:0] phase_calc;
-   
+
    begin
    `ifdef DEBUG
       $display("mmcm_pll_count_calc- divide:%h, phase:%d, duty_cycle:%d",
          divide, phase, duty_cycle);
 `endif
-   
+
       // w_edge[13], no_count[12], high_time[11:6], low_time[5:0]
       div_calc = mmcm_pll_divider(divide, duty_cycle);
       // mx[10:9], pm[8:6], dt[5:0]
@@ -508,18 +508,18 @@ function [37:0] mmcm_pll_count_calc
       //       RESERVED    [12]
       //       HIGH_TIME   [11:6]
       //       LOW_TIME    [5:0]
-      
+
 `ifdef DEBUG
       $display("div:%d dc:%d phase:%d ht:%d lt:%d ed:%d nc:%d mx:%d dt:%d pm:%d",
-         divide, duty_cycle, phase, div_calc[11:6], div_calc[5:0], 
-         div_calc[13], div_calc[12], 
+         divide, duty_cycle, phase, div_calc[11:6], div_calc[5:0],
+         div_calc[13], div_calc[12],
          phase_calc[16:15], phase_calc[5:0], phase_calc[14:12]);
 `endif
-      
+
       mmcm_pll_count_calc =
          {
             // Upper Address
-            6'h00, phase_calc[10:9], div_calc[13:12], phase_calc[5:0], 
+            6'h00, phase_calc[10:9], div_calc[13:12], phase_calc[5:0],
             // Lower Address
             phase_calc[8:6], 1'b0, div_calc[11:0]
          };

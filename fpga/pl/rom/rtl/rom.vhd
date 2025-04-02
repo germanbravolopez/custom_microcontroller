@@ -3,14 +3,14 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.pic_pkg.all;
- 
- 
+
+
 entity rom is
   port (
     instruction     : out std_logic_vector(11 downto 0);  -- instruction bus
     program_counter : in  std_logic_vector(11 downto 0)); -- instruction address
 end rom;
- 
+
 architecture automatic of rom is
 
 constant w0  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_mem & dst_a;
@@ -35,7 +35,7 @@ constant w18  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_constan
 constant w19  : std_logic_vector(11 downto 0) := x"049";
 constant w20  : std_logic_vector(11 downto 0) :=x"0" & type_1 & alu_cmpe;
 constant w21  : std_logic_vector(11 downto 0) :=x"0" & type_2 & jmp_cond;
-constant w22  : std_logic_vector(11 downto 0) :=x"02e";                                       -- saltar al 46 
+constant w22  : std_logic_vector(11 downto 0) :=x"02e";                                       -- saltar al 46
 constant w23  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_constant & dst_b; -- comprobar si el comando es t
 constant w24  : std_logic_vector(11 downto 0) := x"054";
 constant w25  : std_logic_vector(11 downto 0) :=x"0" & type_1 & alu_cmpe;
@@ -59,7 +59,7 @@ constant w42  : std_logic_vector(11 downto 0) := x"005";
 constant w43  : std_logic_vector(11 downto 0) :=x"0" & type_4 & "000000";
 constant w44  : std_logic_vector(11 downto 0) :=x"0" & type_2 & jmp_uncond;
 constant w45  : std_logic_vector(11 downto 0) :=x"000";
-constant w46  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_mem & dst_a;         
+constant w46  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_mem & dst_a;
 constant w47  : std_logic_vector(11 downto 0) := x"001";
 constant w48  : std_logic_vector(11 downto 0) :=x"0" & type_1 & alu_ascii2bin;
 constant w49  : std_logic_vector(11 downto 0) :=x"0" & type_3 & ld & src_acc & dst_indx;
@@ -238,10 +238,10 @@ constant w221  : std_logic_vector(11 downto 0) := x"005";
 constant w222  : std_logic_vector(11 downto 0) :=x"0" & type_4 & "000000";                    -- hasta aqu�
 constant w223  : std_logic_vector(11 downto 0) :=x"0" & type_2 & jmp_uncond;
 constant w224  : std_logic_vector(11 downto 0) :=x"000";
- 
- 
+
+
 begin  -- automatic
- 
+
 with program_counter select
     instruction <=
  w0 when x"000",
@@ -470,6 +470,6 @@ with program_counter select
  w223 when x"0df",
  w224 when x"0e0",
     x"0" & type_1 & alu_add when others;
- 
+
 end automatic;
 

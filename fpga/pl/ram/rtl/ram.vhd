@@ -25,7 +25,7 @@ architecture behavior of ram is
     signal ram_specific : array8_ram(0 to 63);
     signal ram_generic : array8_ram(64 to 255);
     signal chipset : std_logic;
-  
+
 begin
 
 ram_generic_sal <= ram_generic;
@@ -39,12 +39,12 @@ p_chipset: process (reset, address)
             chipset <= '0';
         elsif (address > "00111111") then
             chipset <= '1'; -- address mayor que 00111111 3f 63dec.
-        else 
+        else
             chipset <= '0';
         end if;
     end process;
 
-p_escritura: process (clk, reset, chipset, databus, we_cpu, we_dma) 
+p_escritura: process (clk, reset, chipset, databus, we_cpu, we_dma)
     begin
         if (reset = '0') then
             for i in 0 to 63 loop
@@ -55,14 +55,14 @@ p_escritura: process (clk, reset, chipset, databus, we_cpu, we_dma)
             if (we_cpu = '1' or we_dma = '1') then
                 if (chipset = '0') then
                     ram_specific(to_integer(unsigned(address))) <= databus;
-                elsif (chipset = '1') then     
+                elsif (chipset = '1') then
                     ram_generic(to_integer(unsigned(address))) <= databus;
                 end if;
             end if;
         end if;
     end process;
 
-p_lectura: process (clk, reset, address, chipset, oe_cpu, oe_dma) -- la memoria tiene que ser s�ncrona 
+p_lectura: process (clk, reset, address, chipset, oe_cpu, oe_dma) -- la memoria tiene que ser s�ncrona
     begin                                    -- para que xilinx lo sintetice en los bloques reservados
         if (reset = '0') then
             databus <= (others => 'z');
@@ -96,9 +96,9 @@ temp_h <=
     "1111000" when "0111",  -- 7
     "0000000" when "1000",  -- 8
     "0010000" when "1001",  -- 9
-    "0000110" when others;  -- e de que hay error  
+    "0000110" when others;  -- e de que hay error
 
-    
+
 with ram_specific(49)(3 downto 0) select
     temp_l <=
         "1000000" when "0000",  -- 0

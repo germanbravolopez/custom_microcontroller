@@ -13,7 +13,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity clk_converter is
-  Port ( 
+  Port (
     clk_out1 : out STD_LOGIC;
     reset : in STD_LOGIC;
     locked : out STD_LOGIC;

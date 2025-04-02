@@ -28,14 +28,14 @@ end dma;
 architecture behavioral of dma is
 
     type state is (idle, inicio_tx, aviso_envio1, envio1, envio2, aviso_envio2, inicio_rx, espabiladr, recibir, the_end);
-    
+
     signal currentstate, nextstate : state;
     signal count_rx                : unsigned(1 downto 0) := "00";
     signal next_clk                : unsigned(1 downto 0) := "00";
-    
+
 begin
 
-ffs: process (reset, clk, nextstate) 
+ffs: process (reset, clk, nextstate)
     begin
         if (reset = '0') then
             currentstate <= idle;
@@ -43,9 +43,9 @@ ffs: process (reset, clk, nextstate)
             currentstate <= nextstate;
         end if;
     end process;
-    
-    
-next_process: process (currentstate, rx_empty, send_comm, tx_rdy, dma_ack, count_rx, next_clk) 
+
+
+next_process: process (currentstate, rx_empty, send_comm, tx_rdy, dma_ack, count_rx, next_clk)
     begin
         case currentstate is
             when idle =>
@@ -63,25 +63,25 @@ next_process: process (currentstate, rx_empty, send_comm, tx_rdy, dma_ack, count
                     nextstate <= inicio_tx;
                 end if;
             when aviso_envio1 =>
-                if (tx_rdy = '0') then   
+                if (tx_rdy = '0') then
                     nextstate <= envio1;
                 else
                     nextstate <= aviso_envio1;
                 end if;
             when envio1 =>
-                if (tx_rdy = '1') then  
+                if (tx_rdy = '1') then
                     nextstate <= aviso_envio2;
                 else
                     nextstate <= envio1;
                 end if;
             when aviso_envio2 =>
-                if (tx_rdy = '0') then  
+                if (tx_rdy = '0') then
                     nextstate <= envio2;
                 else
                     nextstate <= aviso_envio2;
                 end if;
             when envio2 =>
-                if (tx_rdy = '1') then  
+                if (tx_rdy = '1') then
                     nextstate <= idle;
                 else
                     nextstate <= envio2;
@@ -115,7 +115,7 @@ next_process: process (currentstate, rx_empty, send_comm, tx_rdy, dma_ack, count
         end case;
     end process;
 
-outputs: process (currentstate, databus, count_rx, rcvd_data) 
+outputs: process (currentstate, databus, count_rx, rcvd_data)
     begin
     databus <= (others => 'z');
     address <= (others => 'z');
@@ -124,28 +124,28 @@ outputs: process (currentstate, databus, count_rx, rcvd_data)
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '1';
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '1';
                 address <= (others => 'z');
                 databus <= (others => 'z');
-                
+
             when inicio_tx =>
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '1';
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '0';
@@ -156,12 +156,12 @@ outputs: process (currentstate, databus, count_rx, rcvd_data)
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '0';
                 valid_d <= '0';
                 tx_data <= databus;
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '0';
@@ -171,57 +171,57 @@ outputs: process (currentstate, databus, count_rx, rcvd_data)
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '0';
                 valid_d <= '1';
                 tx_data <= databus;
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '0';
                 address <= dma_tx_buffer_msb;
-                            
+
             when aviso_envio2 =>
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '0';
                 valid_d <= '0';
                 tx_data <= databus;
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '0';
                 address <= dma_tx_buffer_lsb;
-                                           
+
             when envio2 =>
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '0';
                 valid_d <= '1';
                 tx_data <= databus;
-                
+
                 --ambos
                 dma_rq <= '0';
                 ready  <= '0';
                 address <= dma_tx_buffer_lsb;
-                            
+
             when inicio_rx =>
                 --rx
                 data_read <= '0';
                 write_en <= '0';
-                
+
                 --tx
                 oe_dma <= '1';
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '1'; -- solicitud de los buses
                 ready  <= '0';
@@ -232,49 +232,49 @@ outputs: process (currentstate, databus, count_rx, rcvd_data)
                 --rx
                 data_read <= '1';
                 write_en <= '0'; -- todav�a no escribe en ram
-                
+
                 --tx
                 oe_dma <= '1'; -- no se puede leer de la ram tampoco
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '1';
                 ready  <= '0';
                 address <= (others => 'z');
                 databus <= (others => 'z');
-                
+
             when recibir =>
                 --rx
                 data_read <= '0';
                 write_en <= '1';
-                
+
                 --tx
                 oe_dma <= '1';
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '1';
-                ready  <= '0';                            
-                case count_rx is                                  
-                    when "00"   =>    address <= dma_rx_buffer_msb; 
-                    when "01"   =>    address <= dma_rx_buffer_mid; 
-                    when "10"   =>    address <= dma_rx_buffer_lsb; 
-                    when others =>    address <= (others => 'z');   
-                end case;                                                       
-                databus <= rcvd_data; 
-                                       
+                ready  <= '0';
+                case count_rx is
+                    when "00"   =>    address <= dma_rx_buffer_msb;
+                    when "01"   =>    address <= dma_rx_buffer_mid;
+                    when "10"   =>    address <= dma_rx_buffer_lsb;
+                    when others =>    address <= (others => 'z');
+                end case;
+                databus <= rcvd_data;
+
             when the_end =>
                 --rx
                 data_read <= '0';
                 write_en <= '1';
-                
+
                 --tx
                 oe_dma <= '1';
                 valid_d <= '1';
                 tx_data <= (others => 'z');
-                
+
                 --ambos
                 dma_rq <= '1';
                 ready  <= '0';
@@ -282,8 +282,8 @@ outputs: process (currentstate, databus, count_rx, rcvd_data)
                 databus <= x"ff";
         end case;
     end process;
-    
-counterrecibir: process(clk, reset, currentstate) 
+
+counterrecibir: process(clk, reset, currentstate)
     begin
         if (reset = '0') then
             count_rx <= (others => '0');
@@ -295,8 +295,8 @@ counterrecibir: process(clk, reset, currentstate)
             end if;
         end if;
     end process;
-    
-counternextclk : process(clk, reset, currentstate) 
+
+counternextclk : process(clk, reset, currentstate)
         begin
             if (reset = '0') then
                 next_clk <= (others => '0');
@@ -309,6 +309,6 @@ counternextclk : process(clk, reset, currentstate)
                     next_clk <= (others => '0');
                 end if;
             end if;
-        end process;    
+        end process;
 
 end behavioral;

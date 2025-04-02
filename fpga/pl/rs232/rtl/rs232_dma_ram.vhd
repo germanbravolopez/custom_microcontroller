@@ -6,7 +6,7 @@ use work.pic_pkg.all;
 
 
 entity rs232_dma_ram is
-  port ( 
+  port (
     reset     : in  std_logic; -- asynchronous, active low
     clk       : in  std_logic; -- system clock, 20 mhz, rising_edge
     rs232_rx  : in  std_logic; -- rs232 rx line
@@ -25,7 +25,7 @@ architecture behavioral of rs232_dma_ram is
 -- components
 
   component dma is
-    port ( 
+    port (
         reset : in std_logic;
         clk : in std_logic;
         rcvd_data : in std_logic_vector (7 downto 0);
@@ -47,7 +47,7 @@ architecture behavioral of rs232_dma_ram is
   end component;
 
   component ram is
-    port ( 
+    port (
         clk      : in    std_logic;
         reset    : in    std_logic;
         write_en : in    std_logic;
@@ -58,7 +58,7 @@ architecture behavioral of rs232_dma_ram is
         temp_l   : out   std_logic_vector(6 downto 0);
         temp_h   : out   std_logic_vector(6 downto 0));
   end component;
-    
+
   component rs232top is
     port (
         reset     : in  std_logic;   -- low_level-active asynchronous reset
@@ -80,7 +80,7 @@ architecture behavioral of rs232_dma_ram is
   signal rx_full, rx_empty, ack_out, tx_rdy : std_logic; -- in
   signal data_read, valid_d, write_en, oe : std_logic; -- out
   signal rcvd_data, databus, tx_data, address : std_logic_vector(7 downto 0);
-  
+
   signal ack_in : std_logic;
   signal td, rd, full, empty : std_logic;
   signal data_out, data_in : std_logic_vector(7 downto 0);
@@ -101,7 +101,7 @@ begin -- rtl
       data_read => data_read,
       full      => rx_full,
       empty     => rx_empty);
-      
+
   ram_inst : ram
     port map (
       clk      => clk,
@@ -117,7 +117,7 @@ begin -- rtl
   dma_inst : dma
     port map (
       reset     => reset,
-      clk       => clk, 
+      clk       => clk,
       rcvd_data => rcvd_data,
       rx_full   => rx_full,
       rx_empty  => rx_empty,
